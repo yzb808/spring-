@@ -98,8 +98,16 @@ public class CustomEditorConfigurer implements BeanFactoryPostProcessor, Ordered
 
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
 
+	/*
+	 * 用户定义的PropertyEditor存放在Registrar里，spring容器初始化阶段会申请到Registrar中拿取之前存入的PropertyEditor
+	 */
 	private PropertyEditorRegistrar[] propertyEditorRegistrars;
 
+	/*
+	 * 和PropertyEditorRegistrar[]功能类似，都用于存放需要被注册的PropertyEditor，但Registrar相对而言更加强大，支持在接口的
+	 * 方法实现中撰写注册逻辑，用以细化注册过程
+	 * 注册过程见 AbstractBeanFactory.registerCustomEditors(PropertyEditorRegistry registry)
+	 */
 	private Map<Class<?>, Class<? extends PropertyEditor>> customEditors;
 
 
