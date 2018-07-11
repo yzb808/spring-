@@ -208,6 +208,8 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 
 	/**
 	 * Actually register the default editors for this registry instance.
+	 * Support这个类为用户提供了一组默认转化器，含原始数据类型，集合类型和一些常用类型
+	 * 这样用户再基于Support做属性注入时，就能非常方便的提供输入值
 	 */
 	private void createDefaultEditors() {
 		this.defaultEditors = new HashMap<Class<?>, PropertyEditor>(64);
