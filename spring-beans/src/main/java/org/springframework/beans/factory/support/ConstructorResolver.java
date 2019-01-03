@@ -103,6 +103,7 @@ class ConstructorResolver {
 			Constructor<?>[] chosenCtors, final Object[] explicitArgs) {
 
 		BeanWrapperImpl bw = new BeanWrapperImpl();
+		// 这边给新建的BeanWrapper注册beanFactory中记录的用户自定义属性转化器
 		this.beanFactory.initBeanWrapper(bw);
 
 		Constructor<?> constructorToUse = null;
@@ -112,7 +113,7 @@ class ConstructorResolver {
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
-		else {
+		else { // 如果没有指定参数，则自动探测
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {
 				constructorToUse = (Constructor<?>) mbd.resolvedConstructorOrFactoryMethod;
@@ -268,6 +269,7 @@ class ConstructorResolver {
 				}, beanFactory.getAccessControlContext());
 			}
 			else {
+				// 获取beanFactory的实例化策略，缺省是Cglib
 				beanInstance = this.beanFactory.getInstantiationStrategy().instantiate(
 						mbd, beanName, this.beanFactory, constructorToUse, argsToUse);
 			}

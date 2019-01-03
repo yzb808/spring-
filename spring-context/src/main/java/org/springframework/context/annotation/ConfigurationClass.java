@@ -54,13 +54,18 @@ final class ConfigurationClass {
 
 	private String beanName;
 
+	// 被其它类@import进来
 	private final Set<ConfigurationClass> importedBy = new LinkedHashSet<ConfigurationClass>(1);
 
+	// 被@bean修饰的方法
 	private final Set<BeanMethod> beanMethods = new LinkedHashSet<BeanMethod>();
 
+	// 被import进来的资源
 	private final Map<String, Class<? extends BeanDefinitionReader>> importedResources =
 			new LinkedHashMap<String, Class<? extends BeanDefinitionReader>>();
 
+	// @Import注入的实现BeanDefinitionRegistrar接口的类，作为Registrar注册在这里，最终会被收纳到beanFactory
+	// AnnotationMetadata是被@Import修饰类的元信息
 	private final Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> importBeanDefinitionRegistrars =
 			new LinkedHashMap<ImportBeanDefinitionRegistrar, AnnotationMetadata>();
 

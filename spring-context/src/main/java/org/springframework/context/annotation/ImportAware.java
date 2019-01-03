@@ -20,7 +20,15 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * Interface to be implemented by any @{@link Configuration} class that wishes
+ * 被Import的class实现ImportAware接口，是的import的class的元信息被注入。
+ * 例如:
+ * <pre class="code">
+ * {@code @Configuration}
+ * {@code @Import}("MyImportAware.class")
+ * public class A {
+ * }</pre>
+ * 此时MyImportAware中会被注入A的元信息
+ * <p>Interface to be implemented by any @{@link Configuration} class that wishes
  * to be injected with the {@link AnnotationMetadata} of the @{@code Configuration}
  * class that imported it. Useful in conjunction with annotations that
  * use @{@link Import} as a meta-annotation.

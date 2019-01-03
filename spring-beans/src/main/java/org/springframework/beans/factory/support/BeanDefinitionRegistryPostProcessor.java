@@ -20,7 +20,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 
 /**
- * Extension to the standard {@link BeanFactoryPostProcessor} SPI, allowing for
+ * PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors里特别回调postProcessBeanDefinitionRegistry()，
+ * 入参传入的是beanFactory对象，该接口提供了一个修改definition的机会，spring注解就是使用该方式解析注解，从而生成bean，
+ * 详情见ConfigurationClassPostProcessor
+ * <p>Extension to the standard {@link BeanFactoryPostProcessor} SPI, allowing for
  * the registration of further bean definitions <i>before</i> regular
  * BeanFactoryPostProcessor detection kicks in. In particular,
  * BeanDefinitionRegistryPostProcessor may register further bean definitions

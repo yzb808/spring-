@@ -112,7 +112,13 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 
 
 	/**
-	 * This implementation performs an actual refresh of this context's underlying
+	 * 该方法可以反复调用，每次调用会关闭当前beanFactory，销毁bean实例，随后创建新beanFactory，
+	 * 并加载beanDefinition。重点在加载beanDefinition的工作，这里的设计思路是想将加载工作自动
+	 * 执行，通常都很有针对性，例如基于file，基于path的xml定义加载等。
+	 * <p>与之相对的是GenericApplicationContext（但并不意味着GenericApplicationContext就不支持自动加载，
+	 * 实现见AnnotationConfigApplicationContext）
+	 * <p>该方法在obtainFreshBeanFactory()中被调用
+	 * <p>This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
 	 */
@@ -126,6 +132,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			customizeBeanFactory(beanFactory);
+			// 子类有义务根据自己的业务场景实现loadBeanDefinitions(refreshable有义务在每次refreshBeanFactory时加载definition)
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
@@ -224,7 +231,8 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	}
 
 	/**
-	 * Load bean definitions into the given bean factory, typically through
+	 * 暴露出来的最重要的方法交予子类实现
+	 * <p>Load bean definitions into the given bean factory, typically through
 	 * delegating to one or more bean definition readers.
 	 * @param beanFactory the bean factory to load bean definitions into
 	 * @throws BeansException if parsing of the bean definitions failed

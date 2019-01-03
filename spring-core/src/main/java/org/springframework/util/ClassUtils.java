@@ -364,6 +364,7 @@ public abstract class ClassUtils {
 	/**
 	 * Check whether the given class is cache-safe in the given context,
 	 * i.e. whether it is loaded by the given ClassLoader or a parent of it.
+	 * 如果clazz由classLoader或classLoader的父loader加载，则是安全的
 	 * @param clazz the class to analyze
 	 * @param classLoader the ClassLoader to potentially cache metadata in
 	 */

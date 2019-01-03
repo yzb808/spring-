@@ -17,7 +17,8 @@
 package org.springframework.context.annotation;
 
 /**
- * A variation of {@link ImportSelector} that runs after all {@code @Configuration} beans
+ * 延迟import判断，延迟直到所有Configuration都被解析完成后，再判断具体加载哪些class，这在某些Conditional条件判断里是需要的。
+ * <p>A variation of {@link ImportSelector} that runs after all {@code @Configuration} beans
  * have been processed. This type of selector can be particularly useful when the selected
  * imports are {@code @Conditional}.
  *

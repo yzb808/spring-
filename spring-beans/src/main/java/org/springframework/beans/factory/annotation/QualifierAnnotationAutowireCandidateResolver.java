@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
  */
 public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwareAutowireCandidateResolver {
 
+	// 自定义的具有@Qualifier注解特性的注解，使用CustomAutowireConfigurer注入
 	private final Set<Class<? extends Annotation>> qualifierTypes = new LinkedHashSet<Class<? extends Annotation>>(2);
 
 	private Class<? extends Annotation> valueAnnotationType = Value.class;

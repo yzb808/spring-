@@ -145,12 +145,14 @@ public class StandardBeanExpressionResolver implements BeanExpressionResolver {
 			if (sec == null) {
 				sec = new StandardEvaluationContext();
 				sec.setRootObject(evalContext);
+				// 几个简单的Accessor，使得spel能从beanFactory和scope中解析对象，从Environment中解析属性
 				sec.addPropertyAccessor(new BeanExpressionContextAccessor());
 				sec.addPropertyAccessor(new BeanFactoryAccessor());
 				sec.addPropertyAccessor(new MapAccessor());
 				sec.addPropertyAccessor(new EnvironmentAccessor());
 				sec.setBeanResolver(new BeanFactoryResolver(evalContext.getBeanFactory()));
 				sec.setTypeLocator(new StandardTypeLocator(evalContext.getBeanFactory().getBeanClassLoader()));
+				// 支持type到type的convert，利用conversionService
 				ConversionService conversionService = evalContext.getBeanFactory().getConversionService();
 				if (conversionService != null) {
 					sec.setTypeConverter(new StandardTypeConverter(conversionService));

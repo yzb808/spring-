@@ -23,7 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a constructor, field, setter method or config method as to be autowired
+ * 注意BeanFactoryPostProcessor和BeanPostProcessor实现类中不能使用该注解。
+ * <p>Marks a constructor, field, setter method or config method as to be autowired
  * by Spring's dependency injection facilities.
  *
  * <p>Only one constructor (at max) of any given bean class may carry this annotation,

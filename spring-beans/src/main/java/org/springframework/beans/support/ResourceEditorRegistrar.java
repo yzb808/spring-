@@ -47,7 +47,8 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.ClassUtils;
 
 /**
- * PropertyEditorRegistrar implementation that populates a given
+ * 属性编辑器登记员，封装了通用的属性转化器
+ * <p>PropertyEditorRegistrar implementation that populates a given
  * {@link org.springframework.beans.PropertyEditorRegistry}
  * (typically a {@link org.springframework.beans.BeanWrapper} used for bean
  * creation within an {@link org.springframework.context.ApplicationContext})

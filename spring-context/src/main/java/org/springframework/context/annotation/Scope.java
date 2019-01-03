@@ -79,7 +79,13 @@ public @interface Scope {
 	String scopeName() default "";
 
 	/**
-	 * Specifies whether a component should be configured as a scoped proxy
+	 * proxyMode用于解决非单例bean和单例bean之间的绑定问题。
+	 * <p>当非单例的bean注入到单例bean时，存在的主要问题是，哪一个非单例的bean应该被注入到单例bean中。
+	 * 通常情况下注入单例bean的非单例bean要和当时的上下文相关，例如scope是session的bean，每次被获取到
+	 * 的应该是属于当前session的bean对象。解决这个问题的方式是动态代理，单例bean里注入的是非单例bean的
+	 * 代理对象，单例bean实际获取的是代理对象判断后返回的适合当前scope的实际bean对象。
+	 * <p>动态代理的方式有interface（使用jdk动态代理）和class（cglib动态代理）两种，通常使用cglib即可。
+	 * <p>Specifies whether a component should be configured as a scoped proxy
 	 * and if so, whether the proxy should be interface-based or subclass-based.
 	 * <p>Defaults to {@link ScopedProxyMode#DEFAULT}, which typically indicates
 	 * that no scoped proxy should be created unless a different default

@@ -17,7 +17,10 @@
 package org.springframework.beans;
 
 /**
- * Interface for strategies that register custom
+ * 属性编辑器登记员，记录了一些属性转化器，调用registerCustomEditors时，记录的转化器会被注入PropertyEditorRegistry对象。
+ * 就好比很多特色的小店有自己的签章，游客拿着一张纸到这些小店里分别盖上他们的章子。
+ * 这里Registrar就是小店，registry是白纸，propertyEditor是签章。
+ * <p>Interface for strategies that register custom
  * {@link java.beans.PropertyEditor property editors} with a
  * {@link org.springframework.beans.PropertyEditorRegistry property editor registry}.
  *

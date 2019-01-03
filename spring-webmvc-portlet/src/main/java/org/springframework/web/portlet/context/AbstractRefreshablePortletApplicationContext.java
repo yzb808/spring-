@@ -32,7 +32,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 
 /**
- * {@link org.springframework.context.support.AbstractRefreshableApplicationContext}
+ * portlet特供
+ * <p>{@link org.springframework.context.support.AbstractRefreshableApplicationContext}
  * subclass which implements the {@link ConfigurablePortletApplicationContext}
  * interface for portlet environments. Provides a "configLocations" property,
  * to be populated through the ConfigurablePortletApplicationContext interface
@@ -160,7 +161,8 @@ public abstract class AbstractRefreshablePortletApplicationContext extends Abstr
 	}
 
 	/**
-	 * Create and return a new {@link StandardPortletEnvironment}.
+	 * 这种类型的environment额外初始化portlet和servlet的资源
+	 * <p>Create and return a new {@link StandardPortletEnvironment}.
 	 */
 	@Override
 	protected ConfigurableEnvironment createEnvironment() {

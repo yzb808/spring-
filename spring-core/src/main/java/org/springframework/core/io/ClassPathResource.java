@@ -75,6 +75,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	public ClassPathResource(String path, ClassLoader classLoader) {
 		Assert.notNull(path, "Path must not be null");
 		String pathToUse = StringUtils.cleanPath(path);
+		// 这边把路径打头的'/'干掉了，避免用classLoader获取资源时失败
 		if (pathToUse.startsWith("/")) {
 			pathToUse = pathToUse.substring(1);
 		}
@@ -159,9 +160,11 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		InputStream is;
+		// 如果指定了类，则可以通过类加载资源，此时可以基于类所在相对路径获取资源（无需包路径，详情见com.learn.path.GetResourceTest）
 		if (this.clazz != null) {
 			is = this.clazz.getResourceAsStream(this.path);
 		}
+		// 通过classLoader加载资源，此时是站在应用启动目录处寻找资源
 		else if (this.classLoader != null) {
 			is = this.classLoader.getResourceAsStream(this.path);
 		}

@@ -72,7 +72,9 @@ class ComponentScanAnnotationParser {
 		this.registry = registry;
 	}
 
-
+	/*
+	 * 解析@ComponentScan注解的属性，完成scan行为。
+	 */
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
 		Assert.state(this.environment != null, "Environment must not be null");
 		Assert.state(this.resourceLoader != null, "ResourceLoader must not be null");

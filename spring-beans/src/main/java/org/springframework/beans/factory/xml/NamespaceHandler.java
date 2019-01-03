@@ -71,7 +71,9 @@ public interface NamespaceHandler {
 	BeanDefinition parse(Element element, ParserContext parserContext);
 
 	/**
-	 * Parse the specified {@link Node} and decorate the supplied
+	 * 声明在bean标签的attr里，用于在解析出definition后再做一次修饰。
+	 * bean标签的解析功能已经写死在spring源码，而decorate方法向用户暴露了增强bean标签解析的能力。
+	 * <p>Parse the specified {@link Node} and decorate the supplied
 	 * {@link BeanDefinitionHolder}, returning the decorated definition.
 	 * <p>The {@link Node} may be either an {@link org.w3c.dom.Attr} or an
 	 * {@link Element}, depending on whether a custom attribute or element

@@ -34,7 +34,8 @@ package org.springframework.beans.factory;
 public interface DisposableBean {
 
 	/**
-	 * Invoked by a BeanFactory on destruction of a singleton.
+	 * 注意只对单例bean有效，其它scope不行
+	 * <p>Invoked by a BeanFactory on destruction of a singleton.
 	 * @throws Exception in case of shutdown errors.
 	 * Exceptions will get logged but not rethrown to allow
 	 * other beans to release their resources too.

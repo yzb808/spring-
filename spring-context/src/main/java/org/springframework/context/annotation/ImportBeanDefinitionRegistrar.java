@@ -21,7 +21,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * Interface to be implemented by types that register additional bean definitions when
+ * 该接口实现类通常通过@Import注解或ImportSelector接口返回暴露出来，用于注册definition到容器。
+ * 接口探测注入的逻辑见ConfigurationClassParser.processImports()
+ * <p>Interface to be implemented by types that register additional bean definitions when
  * processing @{@link Configuration} classes. Useful when operating at the bean definition
  * level (as opposed to {@code @Bean} method/instance level) is desired or necessary.
  *
@@ -50,7 +52,9 @@ import org.springframework.core.type.AnnotationMetadata;
 public interface ImportBeanDefinitionRegistrar {
 
 	/**
-	 * Register bean definitions as necessary based on the given annotation metadata of
+	 * 入参importingClassMetadata是被@Import注解修饰的类，入参registry通常是容器的BeanFactory。
+	 * 该接口扩展了definition注册方式，实现该接口向BeanFactory里注入更多definition。
+	 * <p>Register bean definitions as necessary based on the given annotation metadata of
 	 * the importing {@code @Configuration} class.
 	 * <p>Note that {@link BeanDefinitionRegistryPostProcessor} types may <em>not</em> be
 	 * registered here, due to lifecycle constraints related to {@code @Configuration}

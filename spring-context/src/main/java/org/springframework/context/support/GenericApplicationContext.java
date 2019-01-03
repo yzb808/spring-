@@ -253,7 +253,12 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	//---------------------------------------------------------------------
 
 	/**
-	 * Do nothing: We hold a single internal BeanFactory and rely on callers
+	 * 首先GenericApplicationContext的refreshBeanFactory只能调用一次，也即该applicationContext的beanFactory只生成一次。
+	 * 另外该refreshBeanFactory方法不做beanDefinition加载，因此代码直到这里beanFactory还是空的。
+	 * <p>GenericApplicationContext的beanDefinition加载工作要用户编码实现，具体使用示例见该类原文档。
+	 * 正是因为refreshBeanFactory方法不做beanDefinition加载，因此才拒绝多次调用，因为调用生成的只是一个空的beanFactory(不是null)。
+	 * <p>与之相对的是AbstractRefreshableApplicationContext
+	 * <p>Do nothing: We hold a single internal BeanFactory and rely on callers
 	 * to register beans through our public methods (or the BeanFactory's).
 	 * @see #registerBeanDefinition
 	 */

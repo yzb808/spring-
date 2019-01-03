@@ -25,7 +25,8 @@ import java.lang.annotation.Target;
 /**
  * Indicates that the annotated element uses Java 8 specific API constructs,
  * without implying that it strictly requires Java 8.
- *
+ * 标记方法或类中用到了java8的代码，仅仅只是标记，目前还没有看到该标签的解析
+ * 
  * @author Stephane Nicoll
  * @since 4.1
  */

@@ -44,7 +44,8 @@ package org.springframework.beans.factory;
 public interface SmartInitializingSingleton {
 
 	/**
-	 * Invoked right at the end of the singleton pre-instantiation phase,
+	 * 该方法在所有单例非延迟加载的bean都初始化后回调，这一点保证在一些场景下很重要。
+	 * <p>Invoked right at the end of the singleton pre-instantiation phase,
 	 * with a guarantee that all regular singleton beans have been created
 	 * already. {@link ListableBeanFactory#getBeansOfType} calls within
 	 * this method won't trigger accidental side effects during bootstrap.

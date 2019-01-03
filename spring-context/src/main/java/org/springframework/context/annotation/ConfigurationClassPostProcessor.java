@@ -67,7 +67,8 @@ import org.springframework.util.ClassUtils;
 import static org.springframework.context.annotation.AnnotationConfigUtils.*;
 
 /**
- * {@link BeanFactoryPostProcessor} used for bootstrapping processing of
+ * 用于解析@Configuration标签修饰的类
+ * <p>{@link BeanFactoryPostProcessor} used for bootstrapping processing of
  * {@link Configuration @Configuration} classes.
  *
  * <p>Registered by default when using {@code <context:annotation-config/>} or
@@ -210,10 +211,12 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 
 	/**
-	 * Derive further bean definitions from the configuration classes in the registry.
+	 * 寻找被@Configuration修饰的已经加载的bean，解析并加载出更多definition。
+	 * <p>Derive further bean definitions from the configuration classes in the registry.
 	 */
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+		// 避免重复加载
 		int registryId = System.identityHashCode(registry);
 		if (this.registriesPostProcessed.contains(registryId)) {
 			throw new IllegalStateException(
@@ -259,6 +262,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		String[] candidateNames = registry.getBeanDefinitionNames();
 
 		for (String beanName : candidateNames) {
+			// 打上full或lite标签表示已经被处理过，这是spring内部一个隐含的约束
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
 					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
@@ -305,6 +309,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<BeanDefinitionHolder>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<ConfigurationClass>(configCandidates.size());
 		do {
+			// 这里parse还只是把配置解析出来，并未基于配置做更多工作
 			parser.parse(candidates);
 			parser.validate();
 
@@ -317,10 +322,12 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
 			}
+			// 这里利用之前解析出来的configClasses进行definition加载
 			this.reader.loadBeanDefinitions(configClasses);
 			alreadyParsed.addAll(configClasses);
 
 			candidates.clear();
+			// reader.loadBeanDefinitions可能引入新的被configuration修饰的类，在此处继续加载
 			if (registry.getBeanDefinitionCount() > candidateNames.length) {
 				String[] newCandidateNames = registry.getBeanDefinitionNames();
 				Set<String> oldCandidateNames = new HashSet<String>(Arrays.asList(candidateNames));
@@ -349,6 +356,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			}
 		}
 
+		// 清除缓存
 		if (this.metadataReaderFactory instanceof CachingMetadataReaderFactory) {
 			((CachingMetadataReaderFactory) this.metadataReaderFactory).clearCache();
 		}

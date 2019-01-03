@@ -61,7 +61,8 @@ public class StandardEnvironment extends AbstractEnvironment {
 
 
 	/**
-	 * Customize the set of property sources with those appropriate for any standard
+	 * 注入通用的propertySources(System.getProperties(), System.getenv())
+	 * <p>Customize the set of property sources with those appropriate for any standard
 	 * Java environment:
 	 * <ul>
 	 * <li>{@value #SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME}

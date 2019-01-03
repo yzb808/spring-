@@ -35,8 +35,10 @@ import org.springframework.beans.factory.config.BeanReference;
  */
 public class BeanComponentDefinition extends BeanDefinitionHolder implements ComponentDefinition {
 
+	// bean内部定义的子bean
 	private BeanDefinition[] innerBeanDefinitions;
 
+	// 引用的其它bean
 	private BeanReference[] beanReferences;
 
 

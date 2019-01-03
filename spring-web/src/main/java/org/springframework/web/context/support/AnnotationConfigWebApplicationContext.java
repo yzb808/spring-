@@ -86,8 +86,10 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 
 	private ScopeMetadataResolver scopeMetadataResolver;
 
+	// 存储注解配置起点类
 	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<Class<?>>();
 
+	// 存储扫描包路径
 	private final Set<String> basePackages = new LinkedHashSet<String>();
 
 
@@ -163,7 +165,8 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 
 
 	/**
-	 * Register a {@link org.springframework.beans.factory.config.BeanDefinition} for
+	 * 通过解析注解的方式加载definition，支持指定类的reader，也支持指定包的scaner。
+	 * <p>Register a {@link org.springframework.beans.factory.config.BeanDefinition} for
 	 * any classes specified by {@link #register(Class...)} and scan any packages
 	 * specified by {@link #scan(String...)}.
 	 * <p>For any values specified by {@link #setConfigLocation(String)} or
@@ -218,6 +221,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 			scanner.scan(this.basePackages.toArray(new String[this.basePackages.size()]));
 		}
 
+		// configLocations中配置的类和包路径在这里被register或scan
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			for (String configLocation : configLocations) {

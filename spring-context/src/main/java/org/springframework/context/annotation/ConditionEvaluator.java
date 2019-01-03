@@ -99,6 +99,7 @@ class ConditionEvaluator {
 				requiredPhase = ((ConfigurationCondition) condition).getConfigurationPhase();
 			}
 			if (requiredPhase == null || requiredPhase == phase) {
+				// condition的match方法在此调用，多个condition有一个不满足都不行
 				if (!condition.matches(this.context, metadata)) {
 					return true;
 				}

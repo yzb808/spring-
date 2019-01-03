@@ -54,7 +54,8 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 
 
 	/**
-	 * Customize the set of property sources with those contributed by superclasses as
+	 * 定制注入ServletConfig和ServletContext，实际注入工作发生在initPropertySources方法里（定制的时候先在propertySources里占住位置）
+	 * <p>Customize the set of property sources with those contributed by superclasses as
 	 * well as those appropriate for standard servlet-based environments:
 	 * <ul>
 	 * <li>{@value #SERVLET_CONFIG_PROPERTY_SOURCE_NAME}

@@ -19,7 +19,8 @@ package org.springframework.core.type;
 import java.util.Set;
 
 /**
- * Interface that defines abstract access to the annotations of a specific
+ * 获取class上注解的元信息
+ * <p>Interface that defines abstract access to the annotations of a specific
  * class, in a form that does not require that class to be loaded yet.
  *
  * @author Juergen Hoeller
@@ -59,7 +60,8 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	boolean hasAnnotation(String annotationName);
 
 	/**
-	 * Determine whether the underlying class has an annotation that is itself
+	 * 类本身是否被该注解修饰
+	 * <p>Determine whether the underlying class has an annotation that is itself
 	 * annotated with the meta-annotation of the given type.
 	 * @param metaAnnotationName the fully qualified class name of the
 	 * meta-annotation type to look for
@@ -68,7 +70,8 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	boolean hasMetaAnnotation(String metaAnnotationName);
 
 	/**
-	 * Determine whether the underlying class has any methods that are
+	 * 是否有被注解修饰的方法
+	 * <p>Determine whether the underlying class has any methods that are
 	 * annotated (or meta-annotated) with the given annotation type.
 	 * @param annotationName the fully qualified class name of the annotation
 	 * type to look for
@@ -76,7 +79,8 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	boolean hasAnnotatedMethods(String annotationName);
 
 	/**
-	 * Retrieve the method metadata for all methods that are annotated
+	 * 返回被该注解修饰的方法
+	 * <p>Retrieve the method metadata for all methods that are annotated
 	 * (or meta-annotated) with the given annotation type.
 	 * <p>For any returned method, {@link MethodMetadata#isAnnotated} will
 	 * return {@code true} for the given annotation type.

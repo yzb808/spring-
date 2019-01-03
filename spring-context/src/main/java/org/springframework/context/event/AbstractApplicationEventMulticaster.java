@@ -157,7 +157,8 @@ public abstract class AbstractApplicationEventMulticaster
 	}
 
 	/**
-	 * Return a Collection of ApplicationListeners matching the given
+	 * 该方法获取满足响应类型条件的listener，做了一层缓存，以eventType, sourceType作为key。
+	 * <p>Return a Collection of ApplicationListeners matching the given
 	 * event type. Non-matching listeners get excluded early.
 	 * @param event the event to be propagated. Allows for excluding
 	 * non-matching listeners early, based on cached matching information.
@@ -217,6 +218,7 @@ public abstract class AbstractApplicationEventMulticaster
 			listeners = new LinkedHashSet<ApplicationListener<?>>(this.defaultRetriever.applicationListeners);
 			listenerBeans = new LinkedHashSet<String>(this.defaultRetriever.applicationListenerBeans);
 		}
+		// 判断listeners对象列表哪些符合条件
 		for (ApplicationListener<?> listener : listeners) {
 			if (supportsEvent(listener, eventType, sourceType)) {
 				if (retriever != null) {
@@ -225,6 +227,7 @@ public abstract class AbstractApplicationEventMulticaster
 				allListeners.add(listener);
 			}
 		}
+		// 判断listeners名称列表哪些符合条件
 		if (!listenerBeans.isEmpty()) {
 			BeanFactory beanFactory = getBeanFactory();
 			for (String listenerBeanName : listenerBeans) {
@@ -272,7 +275,9 @@ public abstract class AbstractApplicationEventMulticaster
 	}
 
 	/**
-	 * Determine whether the given listener supports the given event.
+	 * 判断listener是否应该响应此类型事件。如果listener是GenericApplicationListener接口的实现，则调用接口方法判断是否支持。
+	 * 否则判断listener类声明的泛型类型，event类型匹配泛型类型时，应该响应该事件。
+	 * <p>Determine whether the given listener supports the given event.
 	 * <p>The default implementation detects the {@link SmartApplicationListener}
 	 * and {@link GenericApplicationListener} interfaces. In case of a standard
 	 * {@link ApplicationListener}, a {@link GenericApplicationListenerAdapter}
@@ -345,8 +350,10 @@ public abstract class AbstractApplicationEventMulticaster
 	 */
 	private class ListenerRetriever {
 
+		// listener对象
 		public final Set<ApplicationListener<?>> applicationListeners;
 
+		// listener bean名称
 		public final Set<String> applicationListenerBeans;
 
 		private final boolean preFiltered;

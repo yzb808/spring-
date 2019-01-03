@@ -180,12 +180,14 @@ public abstract class WebApplicationContextUtils {
 		beanFactory.registerScope(WebApplicationContext.SCOPE_SESSION, new SessionScope(false));
 		beanFactory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, new SessionScope(true));
 		if (sc != null) {
+			// 以ServletContext作为对象容器的scope
 			ServletContextScope appScope = new ServletContextScope(sc);
 			beanFactory.registerScope(WebApplicationContext.SCOPE_APPLICATION, appScope);
 			// Register as ServletContext attribute, for ContextCleanupListener to detect it.
 			sc.setAttribute(ServletContextScope.class.getName(), appScope);
 		}
 
+		// 可以很方便的注入当前的request，response，session对象，spring会记录这些对象
 		beanFactory.registerResolvableDependency(ServletRequest.class, new RequestObjectFactory());
 		beanFactory.registerResolvableDependency(ServletResponse.class, new ResponseObjectFactory());
 		beanFactory.registerResolvableDependency(HttpSession.class, new SessionObjectFactory());
@@ -291,6 +293,7 @@ public abstract class WebApplicationContextUtils {
 		Assert.notNull(propertySources, "'propertySources' must not be null");
 		if (servletContext != null && propertySources.contains(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME) &&
 				propertySources.get(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME) instanceof StubPropertySource) {
+			// 注意这里用的replace，因此能保证在customize方法里占住的位置
 			propertySources.replace(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME,
 					new ServletContextPropertySource(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME, servletContext));
 		}

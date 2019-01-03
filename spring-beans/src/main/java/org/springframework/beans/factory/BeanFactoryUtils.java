@@ -53,6 +53,7 @@ public abstract class BeanFactoryUtils {
 	/**
 	 * Return whether the given name is a factory dereference
 	 * (beginning with the factory dereference prefix).
+	 * 判断是否是需要直接获取beanFactory的name
 	 * @param name the name of the bean
 	 * @return whether the given name is a factory dereference
 	 * @see BeanFactory#FACTORY_BEAN_PREFIX
@@ -62,7 +63,8 @@ public abstract class BeanFactoryUtils {
 	}
 
 	/**
-	 * Return the actual bean name, stripping out the factory dereference
+	 * 去掉factoryBean的前缀
+	 * <p>Return the actual bean name, stripping out the factory dereference
 	 * prefix (if any, also stripping repeated factory prefixes if found).
 	 * @param name the name of the bean
 	 * @return the transformed name

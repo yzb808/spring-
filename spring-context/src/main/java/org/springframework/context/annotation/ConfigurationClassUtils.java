@@ -46,8 +46,10 @@ import org.springframework.stereotype.Component;
  */
 abstract class ConfigurationClassUtils {
 
+	// 类被@Configuration注解修饰就是full
 	private static final String CONFIGURATION_CLASS_FULL = "full";
 
+	// 类被@	Component、@ComponentScan、@Import、@ImportResource修饰，或类中的方法被@Bean修饰
 	private static final String CONFIGURATION_CLASS_LITE = "lite";
 
 	private static final String CONFIGURATION_CLASS_ATTRIBUTE =
@@ -70,7 +72,9 @@ abstract class ConfigurationClassUtils {
 
 
 	/**
-	 * Check whether the given bean definition is a candidate for a configuration class
+	 * 判断是否要被注解处理（被@Configuration或@Configuration子注解修饰（full），或被@Component，@import等注解修饰（lite））。
+	 * 需要被处理的definition会在attribute里做标记，另外这里还提取了Order顺序。
+	 * <p>Check whether the given bean definition is a candidate for a configuration class
 	 * (or a nested component class declared within a configuration/component class,
 	 * to be auto-registered as well), and mark it accordingly.
 	 * @param beanDef the bean definition to check
@@ -83,6 +87,7 @@ abstract class ConfigurationClassUtils {
 			return false;
 		}
 
+		// 获取AnnotationMetadata，以便于操作类上注解
 		AnnotationMetadata metadata;
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
@@ -183,7 +188,8 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
-	 * Determine whether the given bean definition indicates a full {@code @Configuration}
+	 * 类被@Configuration注解修饰就是full
+	 * <p>Determine whether the given bean definition indicates a full {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
 	 */
 	public static boolean isFullConfigurationClass(BeanDefinition beanDef) {
@@ -191,7 +197,8 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
-	 * Determine whether the given bean definition indicates a lite {@code @Configuration}
+	 * 类被@	Component、@ComponentScan、@Import、@ImportResource修饰，或类中的方法被@Bean修饰
+	 * <p>Determine whether the given bean definition indicates a lite {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
 	 */
 	public static boolean isLiteConfigurationClass(BeanDefinition beanDef) {

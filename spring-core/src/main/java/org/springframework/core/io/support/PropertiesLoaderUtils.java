@@ -174,6 +174,7 @@ public abstract class PropertiesLoaderUtils {
 		if (classLoaderToUse == null) {
 			classLoaderToUse = ClassUtils.getDefaultClassLoader();
 		}
+		// 利用classLoader一次将所有符合条件的resource都拿出来
 		Enumeration<URL> urls = (classLoaderToUse != null ? classLoaderToUse.getResources(resourceName) :
 				ClassLoader.getSystemResources(resourceName));
 		Properties props = new Properties();
@@ -183,9 +184,11 @@ public abstract class PropertiesLoaderUtils {
 			ResourceUtils.useCachesIfNecessary(con);
 			InputStream is = con.getInputStream();
 			try {
+				// xml格式
 				if (resourceName.endsWith(XML_FILE_EXTENSION)) {
 					props.loadFromXML(is);
 				}
+				// kv格式
 				else {
 					props.load(is);
 				}

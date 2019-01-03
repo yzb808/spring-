@@ -27,7 +27,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 
 /**
- * Support class for implementing custom {@link NamespaceHandler NamespaceHandlers}.
+ * 用于支持一个命名空间挂载多个处理器或修饰器，子类只需实现init方法
+ * <p>Support class for implementing custom {@link NamespaceHandler NamespaceHandlers}.
  * Parsing and decorating of individual {@link Node Nodes} is done via {@link BeanDefinitionParser}
  * and {@link BeanDefinitionDecorator} strategy interfaces, respectively.
  *

@@ -24,7 +24,8 @@ import org.springframework.beans.factory.xml.ResourceEntityResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 /**
- * {@link org.springframework.web.context.WebApplicationContext} implementation
+ * 重要的工作父类都做了，本类主要实现loadBeanDefinition逻辑，实际解析工作还来自XmlBeanDefinitionReader。
+ * <p>{@link org.springframework.web.context.WebApplicationContext} implementation
  * which takes its configuration from XML documents, understood by an
  * {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
  * This is essentially the equivalent of

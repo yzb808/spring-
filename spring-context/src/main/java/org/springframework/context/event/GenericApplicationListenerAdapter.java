@@ -24,7 +24,8 @@ import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 /**
- * {@link GenericApplicationListener} adapter that determines supported event types
+ * 用泛型做响应事件类型
+ * <p>{@link GenericApplicationListener} adapter that determines supported event types
  * through introspecting the generically declared type of the target listener.
  *
  * @author Juergen Hoeller

@@ -64,6 +64,7 @@ public class BeanExpressionContext {
 	}
 
 
+	// beanFactory和scope对象是Context equal的判断条件，一个beanFactory中的一种scope拥有一个context
 	@Override
 	public boolean equals(Object other) {
 		if (this == other) {

@@ -19,6 +19,7 @@ package org.springframework.context.support;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -39,6 +40,7 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractRefreshableConfigApplicationContext extends AbstractRefreshableApplicationContext
 		implements BeanNameAware, InitializingBean {
 
+	// 记录描述beanDefinition的资源路径
 	private String[] configLocations;
 
 	private boolean setIdCalled = false;
@@ -69,7 +71,9 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 	/**
-	 * Set the config locations for this application context.
+	 * 这边的location还可以是变量，值被存在Environment能寻址到的集合里。
+	 * location最终被applicationContext的resourceLoader对象解析，默认用PathMatchingResourcePatternResolver(ant风格)
+	 * <p>Set the config locations for this application context.
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
 	public void setConfigLocations(String... locations) {
@@ -142,7 +146,8 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 	/**
-	 * Triggers {@link #refresh()} if not refreshed in the concrete context's
+	 * 这是计划将applicationContext当作bean实例化？
+	 * <p>Triggers {@link #refresh()} if not refreshed in the concrete context's
 	 * constructor already.
 	 */
 	@Override

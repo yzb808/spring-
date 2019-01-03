@@ -49,7 +49,8 @@ public interface ConfigurableListableBeanFactory
 	void ignoreDependencyType(Class<?> type);
 
 	/**
-	 * Ignore the given dependency interface for autowiring.
+	 * 扫描接口setXxx方法，忽略xxx属性的自动注入（注入逻辑通常是beanPostProcess实现）
+	 * <p>Ignore the given dependency interface for autowiring.
 	 * <p>This will typically be used by application contexts to register
 	 * dependencies that are resolved in other ways, like BeanFactory through
 	 * BeanFactoryAware or ApplicationContext through ApplicationContextAware.
@@ -62,7 +63,8 @@ public interface ConfigurableListableBeanFactory
 	void ignoreDependencyInterface(Class<?> ifc);
 
 	/**
-	 * Register a special dependency type with corresponding autowired value.
+	 * 注册一些不会被用户直接实例化但可能被引用到bean，例如beanFactory对象等
+	 * <p>Register a special dependency type with corresponding autowired value.
 	 * <p>This is intended for factory/context references that are supposed
 	 * to be autowirable but are not defined as beans in the factory:
 	 * e.g. a dependency of type ApplicationContext resolved to the

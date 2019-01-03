@@ -269,6 +269,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 					}, acc);
 				}
 				else {
+					// 1.先回调DisposableBean接口实现
 					((DisposableBean) bean).destroy();
 				}
 			}
@@ -284,6 +285,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 		}
 
 		if (this.destroyMethod != null) {
+			// 2.再反射destoryMethod声明的方法
 			invokeCustomDestroyMethod(this.destroyMethod);
 		}
 		else if (this.destroyMethodName != null) {

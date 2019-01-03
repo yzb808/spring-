@@ -58,7 +58,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		// 一个具有解析注解能力的reader
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		// classPath下definition批量扫描的scaner
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -85,7 +87,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	}
 
 	/**
-	 * Create a new AnnotationConfigApplicationContext, scanning for bean definitions
+	 * 由于@Configuration注解也是@Component注解的子注解，因此scan能扫描包路径下所有@Configuration，
+	 * 由此进行注解类解析。
+	 * <p>Create a new AnnotationConfigApplicationContext, scanning for bean definitions
 	 * in the given packages and automatically refreshing the context.
 	 * @param basePackages the packages to check for annotated classes
 	 */
@@ -97,6 +101,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 
 	/**
+	 * 重载setEnvironment方法，在执行父类逻辑的前提下，在reader和scanner对象里注入environment方法。
 	 * {@inheritDoc}
 	 * <p>Delegates given environment to underlying {@link AnnotatedBeanDefinitionReader}
 	 * and {@link ClassPathBeanDefinitionScanner} members.
@@ -135,6 +140,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		this.scanner.setScopeMetadataResolver(scopeMetadataResolver);
 	}
 
+	/**
+	 * 覆盖prepareRefresh方法，在原有基础上额外清除scanner缓存
+	 */
 	@Override
 	protected void prepareRefresh() {
 		this.scanner.clearCache();

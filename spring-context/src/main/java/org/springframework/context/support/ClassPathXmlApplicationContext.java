@@ -173,7 +173,8 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	}
 
 	/**
-	 * Create a new ClassPathXmlApplicationContext with the given parent,
+	 * 以clazz去记载path的resource，基于clazz的路径，而不是从classpath开始寻址。
+	 * <p>Create a new ClassPathXmlApplicationContext with the given parent,
 	 * loading the definitions from the given XML files and automatically
 	 * refreshing the context.
 	 * @param paths array of relative (or absolute) paths within the class path
@@ -198,6 +199,9 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	}
 
 
+	/*
+	 * 重构父类的getConfigResources方法，直接提供resource而不是path
+	 */
 	@Override
 	protected Resource[] getConfigResources() {
 		return this.configResources;

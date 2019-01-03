@@ -22,7 +22,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
- * Standalone XML application context, taking the context definition files
+ * 一个便捷的基于xml文件的容器，一键承包了容器的初始化。
+ * <p>Standalone XML application context, taking the context definition files
  * from the file system or from URLs, interpreting plain paths as relative
  * file system locations (e.g. "mydir/myfile.txt"). Useful for test harnesses
  * as well as for standalone environments.
@@ -121,7 +122,8 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	}
 
 	/**
-	 * Create a new FileSystemXmlApplicationContext with the given parent,
+	 * 构造函数中即调用refresh方法，用户无需额外调用。构造出来的对象已经是一个完备的applicationContext。
+	 * <p>Create a new FileSystemXmlApplicationContext with the given parent,
 	 * loading the definitions from the given XML files.
 	 * @param configLocations array of file paths
 	 * @param refresh whether to automatically refresh the context,
@@ -143,7 +145,9 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 
 
 	/**
-	 * Resolve resource paths as file system paths.
+	 * 封装文件做resource，文件内容是xml。该方法覆盖了父类DefaultResourceLoader的同名方法。
+	 * path可以是绝对路径，而父类同名方法中的path会被classLoader加载（资源限于classpath下）
+	 * <p>Resolve resource paths as file system paths.
 	 * <p>Note: Even if a given path starts with a slash, it will get
 	 * interpreted as relative to the current VM working directory.
 	 * This is consistent with the semantics in a Servlet container.

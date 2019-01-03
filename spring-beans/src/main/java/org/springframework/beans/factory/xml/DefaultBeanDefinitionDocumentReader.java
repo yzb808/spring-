@@ -38,7 +38,8 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Default implementation of the {@link BeanDefinitionDocumentReader} interface that
+ * 解析xml的reader
+ * <p>Default implementation of the {@link BeanDefinitionDocumentReader} interface that
  * reads bean definitions according to the "spring-beans" DTD and XSD format
  * (Spring's default XML bean definition format).
  *
@@ -138,6 +139,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
+		// 用户自己实现的reader可以在pre和post的时候做逻辑，默认pre和post没有内容
 		preProcessXml(root);
 		parseBeanDefinitions(root, this.delegate);
 		postProcessXml(root);
@@ -149,12 +151,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			XmlReaderContext readerContext, Element root, BeanDefinitionParserDelegate parentDelegate) {
 
 		BeanDefinitionParserDelegate delegate = new BeanDefinitionParserDelegate(readerContext);
+		// 初始化默认属性，这些定义在beans上的标签会作为默认参数在下辖bean上生效
 		delegate.initDefaults(root, parentDelegate);
 		return delegate;
 	}
 
 	/**
-	 * Parse the elements at the root level in the document:
+	 * dom树解析
+	 * <p>Parse the elements at the root level in the document:
 	 * "import", "alias", "bean".
 	 * @param root the DOM root element of the document
 	 */
@@ -166,9 +170,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
+						// 默认命名空间的标签直接处理
 						parseDefaultElement(ele, delegate);
 					}
 					else {
+						// 非默认命名空间的标签，交由对应handler处理
 						delegate.parseCustomElement(ele);
 					}
 				}
@@ -179,18 +185,29 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 	}
 
+	/*
+	 * spring默认xml的第一层只支持四个标签
+	 */
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+		// import标签指向另一个完成xml的初始化
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
+			// 把标签指向的resouce文件load一次
 			importBeanDefinitionResource(ele);
 		}
+		// 注册别名
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
+			// 注册本命和别名对应关系，发起新增别名的event
 			processAliasRegistration(ele);
 		}
+		// 最常用的bean标签
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+			// 解析出一个definition，并注册
 			processBeanDefinition(ele, delegate);
 		}
+		// beans标签组织一组bean
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
 			// recurse
+			// xml的root就是beans，当子节点也是beans，把子节点当root递归调用
 			doRegisterBeanDefinitions(ele);
 		}
 	}
@@ -301,6 +318,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
+				// 注册definition，最终交由beanFactory存储，核心是一个Map，以beanName做key
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {
@@ -308,6 +326,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
+			// 发布一个definition封装完毕的事件，响应该事件的缺省listener不做任何事，如果想把listener利用起来，
+			// 需要在自定义的XmlBeanDefinitionReader里设置listener，再用该reader解析出definition
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}

@@ -17,7 +17,8 @@
 package org.springframework.context.annotation;
 
 /**
- * Enumerates the various scoped-proxy options.
+ * scoped-proxy，使用哪种方式连接不同scope的对象。
+ * <p>Enumerates the various scoped-proxy options.
  *
  * <p>For a more complete discussion of exactly what a scoped proxy is, see the
  * section of the Spring reference documentation entitled '<em>Scoped beans as
@@ -45,13 +46,15 @@ public enum ScopedProxyMode {
 	NO,
 
 	/**
-	 * Create a JDK dynamic proxy implementing <i>all</i> interfaces exposed by
+	 * jdk提供的动态代理，必须基于接口。
+	 * <p>Create a JDK dynamic proxy implementing <i>all</i> interfaces exposed by
 	 * the class of the target object.
 	 */
 	INTERFACES,
 
 	/**
-	 * Create a class-based proxy (uses CGLIB).
+	 * cglib提供的动态代理。
+	 * <p>Create a class-based proxy (uses CGLIB).
 	 */
 	TARGET_CLASS;
 

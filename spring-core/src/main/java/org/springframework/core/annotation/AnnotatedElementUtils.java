@@ -933,7 +933,7 @@ public class AnnotatedElementUtils {
 
 		if (visited.add(element)) {
 			try {
-				// Start searching within locally declared annotations
+				// Start searching within locally declared annotations，拿出元素上所有注解
 				List<Annotation> declaredAnnotations = Arrays.asList(element.getDeclaredAnnotations());
 				T result = searchWithGetSemanticsInAnnotations(element, declaredAnnotations,
 						annotationType, annotationName, containerType, processor, visited, metaDepth);
@@ -995,10 +995,13 @@ public class AnnotatedElementUtils {
 		// Search in annotations
 		for (Annotation annotation : annotations) {
 			Class<? extends Annotation> currentAnnotationType = annotation.annotationType();
+			// java原生修饰注解的注解就不要判断了
 			if (!AnnotationUtils.isInJavaLangAnnotationPackage(currentAnnotationType)) {
+				// 名称、类型相同，或alwaysProcesses条件满足才会进入下个process环节
 				if (currentAnnotationType == annotationType ||
 						currentAnnotationType.getName().equals(annotationName) ||
 						processor.alwaysProcesses()) {
+					// 缺省使用alwaysTrueAnnotationProcessor，从返回true
 					T result = processor.process(element, annotation, metaDepth);
 					if (result != null) {
 						if (processor.aggregates() && metaDepth == 0) {
@@ -1010,6 +1013,7 @@ public class AnnotatedElementUtils {
 					}
 				}
 				// Repeatable annotations in container?
+				// Repeatable，重复出现的注解以集合形式封装，从而同时生效
 				else if (currentAnnotationType == containerType) {
 					for (Annotation contained : getRawAnnotationsFromContainer(element, annotation)) {
 						T result = processor.process(element, contained, metaDepth);

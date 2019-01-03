@@ -78,7 +78,8 @@ public @interface ComponentScan {
 	String[] basePackages() default {};
 
 	/**
-	 * Type-safe alternative to {@link #basePackages} for specifying the packages
+	 * 指定class做扫描。
+	 * <p>Type-safe alternative to {@link #basePackages} for specifying the packages
 	 * to scan for annotated components. The package of each class specified will be scanned.
 	 * <p>Consider creating a special no-op marker class or interface in each package
 	 * that serves no purpose other than being referenced by this attribute.
@@ -86,7 +87,8 @@ public @interface ComponentScan {
 	Class<?>[] basePackageClasses() default {};
 
 	/**
-	 * The {@link BeanNameGenerator} class to be used for naming detected components
+	 * 生成beanName的策略。
+	 * <p>The {@link BeanNameGenerator} class to be used for naming detected components
 	 * within the Spring container.
 	 * <p>The default value of the {@link BeanNameGenerator} interface itself indicates
 	 * that the scanner used to process this {@code @ComponentScan} annotation should
@@ -98,12 +100,14 @@ public @interface ComponentScan {
 	Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 
 	/**
-	 * The {@link ScopeMetadataResolver} to be used for resolving the scope of detected components.
+	 * 解析scope。
+	 * <p>The {@link ScopeMetadataResolver} to be used for resolving the scope of detected components.
 	 */
 	Class<? extends ScopeMetadataResolver> scopeResolver() default AnnotationScopeMetadataResolver.class;
 
 	/**
-	 * Indicates whether proxies should be generated for detected components, which may be
+	 * 定义缺省的scopedProxy，决定不同scope之间的连接方式。
+	 * <p>Indicates whether proxies should be generated for detected components, which may be
 	 * necessary when using scopes in a proxy-style fashion.
 	 * <p>The default is defer to the default behavior of the component scanner used to
 	 * execute the actual scan.
@@ -113,20 +117,28 @@ public @interface ComponentScan {
 	ScopedProxyMode scopedProxy() default ScopedProxyMode.DEFAULT;
 
 	/**
-	 * Controls the class files eligible for component detection.
+	 * 模糊匹配scan的文件。
+	 * <p>Controls the class files eligible for component detection.
 	 * <p>Consider use of {@link #includeFilters} and {@link #excludeFilters}
 	 * for a more flexible approach.
 	 */
 	String resourcePattern() default ClassPathScanningCandidateComponentProvider.DEFAULT_RESOURCE_PATTERN;
 
 	/**
-	 * Indicates whether automatic detection of classes annotated with {@code @Component}
+	 * 是否使用默认的探测注解（默认注解含@Component和被@Component修饰的注解）
+	 * <p>Indicates whether automatic detection of classes annotated with {@code @Component}
 	 * {@code @Repository}, {@code @Service}, or {@code @Controller} should be enabled.
 	 */
 	boolean useDefaultFilters() default true;
 
 	/**
-	 * Specifies which types are eligible for component scanning.
+	 * 指定includeFilter，内容是Filter对象，Filter有多种类型，且能细化多种行为。
+	 * <pre class="code">
+	 * &#064;ComponentScan(basePackages = "com.concretepage",
+	 * 	includeFilters = @Filter(type = FilterType.REGEX, pattern="com.concretepage.*.*Util"),
+ 	 * 	excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = IUserService.class))  
+ 	 * </pre>
+	 * <p>Specifies which types are eligible for component scanning.
 	 * <p>Further narrows the set of candidate components from everything in {@link #basePackages}
 	 * to everything in the base packages that matches the given filter or filters.
 	 * <p>Note that these filters will be applied in addition to the default filters, if specified.
@@ -138,7 +150,8 @@ public @interface ComponentScan {
 	Filter[] includeFilters() default {};
 
 	/**
-	 * Specifies which types are not eligible for component scanning.
+	 * 指定excludeFilter。
+	 * <p>Specifies which types are not eligible for component scanning.
 	 * @see #resourcePattern
 	 */
 	Filter[] excludeFilters() default {};
@@ -160,7 +173,8 @@ public @interface ComponentScan {
 	@interface Filter {
 
 		/**
-		 * The type of filter to use.
+		 * 过滤器类型。
+		 * <p>The type of filter to use.
 		 * <p>Default is {@link FilterType#ANNOTATION}.
 		 * @see #classes
 		 * @see #pattern
@@ -175,7 +189,8 @@ public @interface ComponentScan {
 		Class<?>[] value() default {};
 
 		/**
-		 * The class or classes to use as the filter.
+		 * 需要过滤的值，不同类型含义不同。
+		 * <p>The class or classes to use as the filter.
 		 * <p>The following table explains how the classes will be interpreted
 		 * based on the configured value of the {@link #type} attribute.
 		 * <table border="1">
@@ -208,7 +223,8 @@ public @interface ComponentScan {
 		Class<?>[] classes() default {};
 
 		/**
-		 * The pattern (or patterns) to use for the filter, as an alternative
+		 * 正则，在type是正则的时候指定有效。
+		 * <p>The pattern (or patterns) to use for the filter, as an alternative
 		 * to specifying a Class {@link #value}.
 		 * <p>If {@link #type} is set to {@link FilterType#ASPECTJ ASPECTJ},
 		 * this is an AspectJ type pattern expression. If {@link #type} is

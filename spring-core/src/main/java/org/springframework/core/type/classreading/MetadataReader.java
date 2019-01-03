@@ -21,7 +21,8 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 
 /**
- * Simple facade for accessing class metadata,
+ * 获取资源，类元信息，注解元信息，是对class信息的拆解和封装。
+ * <p>Simple facade for accessing class metadata,
  * as read by an ASM {@link org.springframework.asm.ClassReader}.
  *
  * @author Juergen Hoeller

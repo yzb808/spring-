@@ -27,7 +27,8 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.core.Conventions;
 
 /**
- * Simple {@code NamespaceHandler} implementation that maps custom attributes
+ * p命名空间定义在spring-beans的spring.handlers文件里。
+ * <p>Simple {@code NamespaceHandler} implementation that maps custom attributes
  * directly through to bean properties. An important point to note is that this
  * {@code NamespaceHandler} does not have a corresponding schema since there
  * is no way to know in advance all possible attribute names.

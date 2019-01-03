@@ -19,7 +19,9 @@ package org.springframework.context.annotation;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * Interface to be implemented by types that determine which @{@link Configuration}
+ * 实现该接口，判断哪些class需要被import。如果同时实现Aware接口，在这些资源被注入后，才会回调接口方法。
+ * 通常配合@import注解使用，ImportSelector接口实现类作为@import注解value属性的值。
+ * <p>Interface to be implemented by types that determine which @{@link Configuration}
  * class(es) should be imported based on a given selection criteria, usually one or more
  * annotation attributes.
  *
@@ -48,7 +50,8 @@ import org.springframework.core.type.AnnotationMetadata;
 public interface ImportSelector {
 
 	/**
-	 * Select and return the names of which class(es) should be imported based on
+	 * 入参importingClassMetadata是被@Import或@Import子类修饰的类的元信息。
+	 * <p>Select and return the names of which class(es) should be imported based on
 	 * the {@link AnnotationMetadata} of the importing @{@link Configuration} class.
 	 */
 	String[] selectImports(AnnotationMetadata importingClassMetadata);

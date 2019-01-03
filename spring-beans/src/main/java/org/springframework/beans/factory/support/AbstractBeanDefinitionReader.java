@@ -210,10 +210,12 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 					"Cannot import bean definitions from location [" + location + "]: no ResourceLoader available");
 		}
 
+		// 是否支持模糊匹配的path，从而指向多个resource
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+				// 重点在这里
 				int loadCount = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					for (Resource resource : resources) {

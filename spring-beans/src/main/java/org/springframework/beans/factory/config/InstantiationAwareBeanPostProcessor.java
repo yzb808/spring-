@@ -79,11 +79,13 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * if property population should be skipped. Normal implementations should return {@code true}.
 	 * Returning {@code false} will also prevent any subsequent InstantiationAwareBeanPostProcessor
 	 * instances being invoked on this bean instance.
+	 * 返回false造成bean属性不被注入，且后续postProcessor对象不被调用
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
 	boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException;
 
 	/**
+	 * 提供在注入属性之前改变属性的方式，会将需要注入的所有属性一并传入（pvs），而pds表示过滤掉用户指定无需注入的其它所有属性
 	 * Post-process the given property values before the factory applies them
 	 * to the given bean. Allows for checking whether all dependencies have been
 	 * satisfied, for example based on a "Required" annotation on bean property setters.

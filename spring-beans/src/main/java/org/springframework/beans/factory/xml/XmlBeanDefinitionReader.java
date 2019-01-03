@@ -279,7 +279,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	}
 
 	/**
-	 * Specify the {@link BeanDefinitionDocumentReader} implementation to use,
+	 * 改变documentReaderClass，从而干预xml解析逻辑
+	 * <p>Specify the {@link BeanDefinitionDocumentReader} implementation to use,
 	 * responsible for the actual reading of the XML bean definition document.
 	 * <p>The default is {@link DefaultBeanDefinitionDocumentReader}.
 	 * @param documentReaderClass the desired BeanDefinitionDocumentReader implementation class
@@ -329,6 +330,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		try {
 			InputStream inputStream = encodedResource.getResource().getInputStream();
 			try {
+				// 用jdk自带工具解析xml
 				InputSource inputSource = new InputSource(inputStream);
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());

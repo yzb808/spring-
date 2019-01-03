@@ -17,7 +17,8 @@
 package org.springframework.context.annotation;
 
 /**
- * A {@link Condition} that offers more fine-grained control when used with
+ * Condition的精细化管理，决定该Condition在哪里生效。
+ * <p>A {@link Condition} that offers more fine-grained control when used with
  * {@code @Configuration}. Allows certain {@link Condition}s to adapt when they match
  * based on the configuration phase. For example, a condition that checks if a bean
  * has already been registered might choose to only be evaluated during the
@@ -41,7 +42,8 @@ public interface ConfigurationCondition extends Condition {
 	enum ConfigurationPhase {
 
 		/**
-		 * The {@link Condition} should be evaluated as a {@code @Configuration}
+		 * Condition作用在Configuration类上
+		 * <p>The {@link Condition} should be evaluated as a {@code @Configuration}
 		 * class is being parsed.
 		 * <p>If the condition does not match at this point, the {@code @Configuration}
 		 * class will not be added.
@@ -49,7 +51,8 @@ public interface ConfigurationCondition extends Condition {
 		PARSE_CONFIGURATION,
 
 		/**
-		 * The {@link Condition} should be evaluated when adding a regular
+		 * Condition作用在bean上
+		 * <p>The {@link Condition} should be evaluated when adding a regular
 		 * (non {@code @Configuration}) bean. The condition will not prevent
 		 * {@code @Configuration} classes from being added.
 		 * <p>At the time that the condition is evaluated, all {@code @Configuration}s

@@ -80,6 +80,7 @@ public class AnnotatedBeanDefinitionReader {
 		Assert.notNull(environment, "Environment must not be null");
 		this.registry = registry;
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+		// 注册了解析注解的postProcessor
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -155,7 +156,10 @@ public class AnnotatedBeanDefinitionReader {
 	}
 
 	/**
-	 * Register a bean from the given bean class, deriving its metadata from
+	 * 通常这里注入的是被@configuration修饰的class，这里只是解析了入参class作为definition注册，
+	 * 不对class里的内容做深度解析（解析行为交予ConfigurationClassPostProcessor实现）。
+	 * 这个annotatedClass只是一个入口，通过@import和@ComponentScan注解能扩展到更多内容。
+	 * <p>Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations.
 	 * @param annotatedClass the class of the bean
 	 * @param name an explicit name for the bean
@@ -165,14 +169,18 @@ public class AnnotatedBeanDefinitionReader {
 	@SuppressWarnings("unchecked")
 	public void registerBean(Class<?> annotatedClass, String name, Class<? extends Annotation>... qualifiers) {
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(annotatedClass);
+		// 判断condition.match方法的执行结果，决定是否要注册类中的bean
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
 
+		// 获取@Scope标签定义的元数据
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
+		// 填充一些通用注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		// 入参传入qualifier用于配置definition
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -188,7 +196,9 @@ public class AnnotatedBeanDefinitionReader {
 		}
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+		// 实例化bean的方式
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		// 注册definition
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 

@@ -119,9 +119,11 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				});
 			}
+			// 如果没有method overrides，直接用反射实例化对象
 			return BeanUtils.instantiateClass(ctor, args);
 		}
 		else {
+			// 用Cglib生成代理类，再实例化对象
 			return instantiateWithMethodInjection(bd, beanName, owner, ctor, args);
 		}
 	}

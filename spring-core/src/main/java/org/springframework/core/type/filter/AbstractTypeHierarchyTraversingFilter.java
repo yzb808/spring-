@@ -26,7 +26,8 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
- * Type filter that is aware of traversing over hierarchy.
+ * 父注解满足条件也可以
+ * <p>Type filter that is aware of traversing over hierarchy.
  *
  * <p>This filter is useful when matching needs to be made based on potentially the
  * whole class/interface hierarchy. The algorithm employed uses a succeed-fast
@@ -69,6 +70,7 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 		if (this.considerInherited) {
 			if (metadata.hasSuperClass()) {
 				// Optimization to avoid creating ClassReader for super class.
+				// 判断父注解是否满足条件
 				Boolean superClassMatch = matchSuperClass(metadata.getSuperClassName());
 				if (superClassMatch != null) {
 					if (superClassMatch.booleanValue()) {

@@ -737,8 +737,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			// 单例非抽象类非延迟初始化的bd会被初始化
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				if (isFactoryBean(beanName)) {
+					// &beanName获取factoryBean对象(factoryBean对象需要被实例化)
 					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 					boolean isEagerInit;
 					if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
@@ -753,6 +755,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						isEagerInit = (factory instanceof SmartFactoryBean &&
 								((SmartFactoryBean<?>) factory).isEagerInit());
 					}
+					// 默认FactoryBean都不是在初始化时实例化，需要继承SmartFactoryBean并实现isEagerInit方法返回true
 					if (isEagerInit) {
 						getBean(beanName);
 					}
@@ -766,6 +769,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// Trigger post-initialization callback for all applicable beans...
 		for (String beanName : beanNames) {
 			Object singletonInstance = getSingleton(beanName);
+			// 回调SmartInitializingSingleton接口的方法
 			if (singletonInstance instanceof SmartInitializingSingleton) {
 				final SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;
 				if (System.getSecurityManager() != null) {

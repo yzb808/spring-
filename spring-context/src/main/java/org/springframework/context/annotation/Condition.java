@@ -20,7 +20,8 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * A single {@code condition} that must be {@linkplain #matches matched} in order
+ * 继承并实现该接口，作为@Conditional注解判断依据。
+ * <p>A single {@code condition} that must be {@linkplain #matches matched} in order
  * for a component to be registered.
  *
  * <p>Conditions are checked immediately before the bean-definition is due to be

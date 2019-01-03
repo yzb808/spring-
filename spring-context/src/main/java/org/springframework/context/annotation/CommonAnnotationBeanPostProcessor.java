@@ -72,7 +72,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 /**
- * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
+ * PostConstruct、PreDestroy、Resource注解在此处声明
+ * <p>{@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
  * that supports common Java annotations out of the box, in particular the JSR-250
  * annotations in the {@code javax.annotation} package. These common Java
  * annotations are supported in many Java EE 5 technologies (e.g. JSF 1.2),
@@ -197,6 +198,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	 */
 	public CommonAnnotationBeanPostProcessor() {
 		setOrder(Ordered.LOWEST_PRECEDENCE - 3);
+		// 声明PostConstruct和PreDestroy注解作为初始化和终止回收
 		setInitAnnotationType(PostConstruct.class);
 		setDestroyAnnotationType(PreDestroy.class);
 		ignoreResourceType("javax.xml.ws.WebServiceContext");
@@ -583,7 +585,8 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 
 	/**
-	 * Class representing injection information about an annotated field
+	 * Resource注解及相关属性
+	 * <p>Class representing injection information about an annotated field
 	 * or setter method, supporting the @Resource annotation.
 	 */
 	private class ResourceElement extends LookupElement {

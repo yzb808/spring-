@@ -17,7 +17,8 @@
 package org.springframework.core.type;
 
 /**
- * Interface that defines abstract metadata of a specific class,
+ * 类元信息封装
+ * <p>Interface that defines abstract metadata of a specific class,
  * in a form that does not require that class to be loaded yet.
  *
  * @author Juergen Hoeller

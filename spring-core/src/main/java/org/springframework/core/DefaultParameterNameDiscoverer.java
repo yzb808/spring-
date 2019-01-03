@@ -33,12 +33,14 @@ import org.springframework.util.ClassUtils;
  */
 public class DefaultParameterNameDiscoverer extends PrioritizedParameterNameDiscoverer {
 
+	// 判断是否java8版本（java.lang.reflect.Executable始于java8）
 	private static final boolean standardReflectionAvailable = ClassUtils.isPresent(
 			"java.lang.reflect.Executable", DefaultParameterNameDiscoverer.class.getClassLoader());
 
 
 	public DefaultParameterNameDiscoverer() {
 		if (standardReflectionAvailable) {
+			// StandardReflectionParameterNameDiscoverer用到java8的内容，因此standardReflectionAvailable为true时才被使用
 			addDiscoverer(new StandardReflectionParameterNameDiscoverer());
 		}
 		addDiscoverer(new LocalVariableTableParameterNameDiscoverer());

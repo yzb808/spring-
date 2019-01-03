@@ -35,7 +35,8 @@ package org.springframework.beans.factory;
 public interface InitializingBean {
 
 	/**
-	 * Invoked by a BeanFactory after it has set all bean properties supplied
+	 * 对所有scope的bean都生效
+	 * <p>Invoked by a BeanFactory after it has set all bean properties supplied
 	 * (and satisfied BeanFactoryAware and ApplicationContextAware).
 	 * <p>This method allows the bean instance to perform initialization only
 	 * possible when all bean properties have been set and to throw an

@@ -53,7 +53,8 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link ResourcePatternResolver} implementation that is able to resolve a
+ * 使用Ant风格做path的模糊匹配，更重要的是实现getResources方法，能够批量获取目录下的资源。
+ * <p>A {@link ResourcePatternResolver} implementation that is able to resolve a
  * specified resource location path into one or more matching Resources.
  * The source path may be a simple path which has a one-to-one mapping to a
  * target {@link org.springframework.core.io.Resource}, or alternatively

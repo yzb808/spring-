@@ -24,7 +24,8 @@ import org.springframework.beans.factory.xml.ResourceEntityResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 /**
- * Portlet-based {@link org.springframework.web.context.WebApplicationContext}
+ * 本类和XmlWebApplicationContext实现一致，只是父类不同。
+ * <p>Portlet-based {@link org.springframework.web.context.WebApplicationContext}
  * implementation which takes its configuration from XML documents, understood
  * by an {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
  * This is essentially the equivalent of

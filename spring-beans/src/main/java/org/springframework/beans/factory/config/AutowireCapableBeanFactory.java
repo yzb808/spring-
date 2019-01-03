@@ -126,7 +126,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	<T> T createBean(Class<T> beanClass) throws BeansException;
 
 	/**
-	 * Populate the given bean instance through applying after-instantiation callbacks
+	 * 该方法会经历postProcessAfterInstantiation方法的过滤，但没有properties值，因此只适用于注解声明的属性注入
+	 * <p>Populate the given bean instance through applying after-instantiation callbacks
 	 * and bean property post-processing (e.g. for annotation-driven injection).
 	 * <p>Note: This is essentially intended for (re-)populating annotated fields and
 	 * methods, either for new instances or for deserialized instances. It does
@@ -138,6 +139,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	void autowireBean(Object existingBean) throws BeansException;
 
 	/**
+	 * 入参beanName需要能对应到BeanFactory里的一个BeanDefinition，随后利用bd做一套完全的初始化
 	 * Configure the given raw bean: autowiring bean properties, applying
 	 * bean property values, applying factory callbacks such as {@code setBeanName}
 	 * and {@code setBeanFactory}, and also applying all bean post processors
@@ -181,6 +183,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object createBean(Class<?> beanClass, int autowireMode, boolean dependencyCheck) throws BeansException;
 
 	/**
+	 * 传入class和自动注入方式，返回对象
 	 * Instantiate a new bean instance of the given class with the specified autowire
 	 * strategy. All constants defined in this interface are supported here.
 	 * Can also be invoked with {@code AUTOWIRE_NO} in order to just apply
@@ -209,6 +212,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object autowire(Class<?> beanClass, int autowireMode, boolean dependencyCheck) throws BeansException;
 
 	/**
+	 * 提供对象和自动化注入方式，为对象注入属性
 	 * Autowire the bean properties of the given bean instance by name or type.
 	 * Can also be invoked with {@code AUTOWIRE_NO} in order to just apply
 	 * after-instantiation callbacks (e.g. for annotation-driven injection).
@@ -230,7 +234,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 			throws BeansException;
 
 	/**
-	 * Apply the property values of the bean definition with the given name to
+	 * 为提供的对象注入属性，不做autowrie，入参beanName要能对应到BeanFactory里的一个BeanDefinition
+	 * <p>Apply the property values of the bean definition with the given name to
 	 * the given bean instance. The bean definition can either define a fully
 	 * self-contained bean, reusing its property values, or just property values
 	 * meant to be used for existing bean instances.

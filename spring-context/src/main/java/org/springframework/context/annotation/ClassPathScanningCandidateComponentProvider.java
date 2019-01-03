@@ -80,6 +80,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 
 	private final List<TypeFilter> includeFilters = new LinkedList<TypeFilter>();
 
+	// 优先判断exclude，再判断include
 	private final List<TypeFilter> excludeFilters = new LinkedList<TypeFilter>();
 
 	private Environment environment;
@@ -170,7 +171,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
-	 * Register the default filter for {@link Component @Component}.
+	 * Component和Component子注解都将被接纳（@Configuration注解也是@Component的子注解），
+	 * 另外还包含@ManagedBean和@Named。
+	 * <p>Register the default filter for {@link Component @Component}.
 	 * <p>This will implicitly register all annotations that have the
 	 * {@link Component @Component} meta-annotation including the
 	 * {@link Repository @Repository}, {@link Service @Service}, and
@@ -181,6 +184,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
+		// 所有被Component修饰的或被Component修饰的注解修饰的（例如@service）resource会被include
 		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
 		ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
 		try {
@@ -266,7 +270,8 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 
 
 	/**
-	 * Scan the class path for candidate components.
+	 * 搜索满足条件的definition，被排除的和condition不通过的都不会被选中（默认情况include @Component 系列bean）
+	 * <p>Scan the class path for candidate components.
 	 * @param basePackage the package to check for annotated classes
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
@@ -345,13 +350,16 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return whether the class qualifies as a candidate component
 	 */
 	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
+		// 是否被排除
 		for (TypeFilter tf : this.excludeFilters) {
 			if (tf.match(metadataReader, this.metadataReaderFactory)) {
 				return false;
 			}
 		}
+		// 是否被包含，调用registerDefaultFilters方法，使得通用注解都能被识别
 		for (TypeFilter tf : this.includeFilters) {
 			if (tf.match(metadataReader, this.metadataReaderFactory)) {
+				// condition条件是否满足
 				return isConditionMatch(metadataReader);
 			}
 		}

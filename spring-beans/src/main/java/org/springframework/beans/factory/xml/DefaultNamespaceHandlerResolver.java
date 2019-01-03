@@ -144,13 +144,15 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	}
 
 	/**
-	 * Load the specified NamespaceHandler mappings lazily.
+	 * 以uri做key，class做value（string或NamespaceHandler对象），指向namespace的处理类（NamespaceHandler的子类）
+	 * <p>Load the specified NamespaceHandler mappings lazily.
 	 */
 	private Map<String, Object> getHandlerMappings() {
 		if (this.handlerMappings == null) {
 			synchronized (this) {
 				if (this.handlerMappings == null) {
 					try {
+						// location默认是"META-INF/spring.handlers"
 						Properties mappings =
 								PropertiesLoaderUtils.loadAllProperties(this.handlerMappingsLocation, this.classLoader);
 						if (logger.isDebugEnabled()) {

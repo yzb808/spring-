@@ -134,6 +134,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 		try {
 			Method[] methods = getIntrospectedClass().getDeclaredMethods();
 			for (Method method : methods) {
+				// 不是桥接方法(java编译器为完善多态，重载等策略等自动添加的方法)，
 				if (!method.isBridge() && method.getAnnotations().length > 0 &&
 						AnnotatedElementUtils.isAnnotated(method, annotationName)) {
 					return true;

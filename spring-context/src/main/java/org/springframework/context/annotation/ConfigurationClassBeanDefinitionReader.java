@@ -118,12 +118,14 @@ class ConfigurationClassBeanDefinitionReader {
 	}
 
 	/**
+	 * 解析使用@Bean修饰的方法，创建相关beanDefinition
 	 * Read a particular {@link ConfigurationClass}, registering bean definitions
 	 * for the class itself and all of its {@link Bean} methods.
 	 */
 	private void loadBeanDefinitionsForConfigurationClass(ConfigurationClass configClass,
 			TrackedConditionEvaluator trackedConditionEvaluator) {
 
+		// 判断configClass是不是要加载，无需加载时回收注册器中可能存在的对应资源
 		if (trackedConditionEvaluator.shouldSkip(configClass)) {
 			String beanName = configClass.getBeanName();
 			if (StringUtils.hasLength(beanName) && this.registry.containsBeanDefinition(beanName)) {
@@ -134,12 +136,16 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 
 		if (configClass.isImported()) {
+			// 将被import的class注册进registry，补偿逻辑
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
+			// 将@Bean修饰的method注册definition
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
+		// 从@ImportResource注解location参数提供的配置文件中加载definition
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+		// 从登记的Registrars里加载更多definitions
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 
@@ -157,6 +163,7 @@ class ConfigurationClassBeanDefinitionReader {
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(configBeanDef, configBeanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		// 注册进registry
 		this.registry.registerBeanDefinition(definitionHolder.getBeanName(), definitionHolder.getBeanDefinition());
 		configClass.setBeanName(configBeanName);
 
@@ -175,6 +182,7 @@ class ConfigurationClassBeanDefinitionReader {
 		String methodName = metadata.getMethodName();
 
 		// Do we need to mark the bean as skipped by its condition?
+		// @conditional判断
 		if (this.conditionEvaluator.shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN)) {
 			configClass.skippedBeanMethods.add(methodName);
 			return;
@@ -207,6 +215,7 @@ class ConfigurationClassBeanDefinitionReader {
 		beanDef.setResource(configClass.getResource());
 		beanDef.setSource(this.sourceExtractor.extractSource(metadata, configClass.getResource()));
 
+		// 动态和静态工厂方法，这是@bean修饰的defintion的实例化方式
 		if (metadata.isStatic()) {
 			// static @Bean method
 			beanDef.setBeanClassName(configClass.getMetadata().getClassName());
@@ -220,6 +229,7 @@ class ConfigurationClassBeanDefinitionReader {
 		beanDef.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR);
 		beanDef.setAttribute(RequiredAnnotationBeanPostProcessor.SKIP_REQUIRED_CHECK_ATTRIBUTE, Boolean.TRUE);
 
+		// 通用注解解析
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(beanDef, metadata);
 
 		Autowire autowire = bean.getEnum("autowire");
@@ -263,6 +273,7 @@ class ConfigurationClassBeanDefinitionReader {
 					configClass.getMetadata().getClassName(), beanName));
 		}
 
+		// 注册beanDefinition
 		this.registry.registerBeanDefinition(beanName, beanDefToRegister);
 	}
 

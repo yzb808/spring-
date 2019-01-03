@@ -33,7 +33,8 @@ import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 
 /**
- * {@link org.springframework.context.support.AbstractRefreshableApplicationContext}
+ * web servlet特供
+ * <p>{@link org.springframework.context.support.AbstractRefreshableApplicationContext}
  * subclass which implements the
  * {@link org.springframework.web.context.ConfigurableWebApplicationContext}
  * interface for web environments. Provides a "configLocations" property,
@@ -157,11 +158,15 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 拦截实现ServletContextAware和ServletConfigAware接口的对象，注入servletContext和servletConfig
 		beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext, this.servletConfig));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
 		beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
 
+		// 注入servlet相关的scope和servlet相关的对象
 		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+		// 注册servletContext，servletConfig对象到beanFactory，单独提出servletContext，servletConfig里的InitParameter组成contextParameters
+		// 提出servletContext中的attribute组成contextAttributes注册到beanFactory
 		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext, this.servletConfig);
 	}
 

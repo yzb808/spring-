@@ -141,7 +141,8 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 
 	/**
-	 * Create a new AutowiredAnnotationBeanPostProcessor
+	 * 被value，Autowired，Inject注解修饰的内容要自动注入
+	 * <p>Create a new AutowiredAnnotationBeanPostProcessor
 	 * for Spring's standard {@link Autowired} annotation.
 	 * <p>Also supports JSR-330's {@link javax.inject.Inject} annotation, if available.
 	 */
@@ -409,6 +410,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 						metadata.clear(pvs);
 					}
 					try {
+						// 生成一个类需要被自动注入的属性元信息
 						metadata = buildAutowiringMetadata(clazz);
 						this.injectionMetadataCache.put(cacheKey, metadata);
 					}
@@ -433,6 +435,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			ReflectionUtils.doWithLocalFields(targetClass, new ReflectionUtils.FieldCallback() {
 				@Override
 				public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+					// 获取需要被自动注入的注解
 					AnnotationAttributes ann = findAutowiredAnnotation(field);
 					if (ann != null) {
 						if (Modifier.isStatic(field.getModifiers())) {

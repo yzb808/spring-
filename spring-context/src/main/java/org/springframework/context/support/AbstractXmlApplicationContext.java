@@ -26,7 +26,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
 /**
- * Convenient base class for {@link org.springframework.context.ApplicationContext}
+ * 存xml特供
+ * <p>Convenient base class for {@link org.springframework.context.ApplicationContext}
  * implementations, drawing configuration from XML documents containing bean definitions
  * understood by an {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
  *
@@ -71,7 +72,8 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 
 
 	/**
-	 * Loads the bean definitions via an XmlBeanDefinitionReader.
+	 * 没有额外定制Environment，但已经已经分装了xml read来做definition解析。
+	 * <p>Loads the bean definitions via an XmlBeanDefinitionReader.
 	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
 	 * @see #initBeanDefinitionReader
 	 * @see #loadBeanDefinitions
@@ -106,7 +108,8 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	}
 
 	/**
-	 * Load the bean definitions with the given XmlBeanDefinitionReader.
+	 * xml reader
+	 * <p>Load the bean definitions with the given XmlBeanDefinitionReader.
 	 * <p>The lifecycle of the bean factory is handled by the {@link #refreshBeanFactory}
 	 * method; hence this method is just supposed to load and/or register bean definitions.
 	 * @param reader the XmlBeanDefinitionReader to use
@@ -118,10 +121,12 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #getResourcePatternResolver
 	 */
 	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
+		// getConfigResources方法来自当前类
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
 			reader.loadBeanDefinitions(configResources);
 		}
+		// getConfigLocations方法来自父类
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			reader.loadBeanDefinitions(configLocations);

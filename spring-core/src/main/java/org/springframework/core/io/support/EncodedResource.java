@@ -28,7 +28,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Holder that combines a {@link Resource} descriptor with a specific encoding
+ * EncodedResource在Resource的基础上做了一层封装，支持以不同字符形式获取资源。
+ * <p>Holder that combines a {@link Resource} descriptor with a specific encoding
  * or {@code Charset} to be used for reading from the resource.
  *
  * <p>Used as an argument for operations that support reading content with
