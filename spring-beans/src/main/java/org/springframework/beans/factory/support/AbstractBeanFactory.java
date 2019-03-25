@@ -252,7 +252,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.debug("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
-			// factoryBean也是一个单例bean，针对factoryBean的情况，创建实际bean
+			// 完成sharedInstance到bean的转化，主要处理factoryBean的情况。factoryBean也是一个单例bean，针对factoryBean的情况，创建实际bean
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -307,6 +307,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// Create bean instance.
 				if (mbd.isSingleton()) {
 					// 带工厂方法的getSingleton调用，获取或新建，新建会完成注册缓存
+					// 传入句柄执行创建，好处是，getSingleton方法内部能选择是否要调用句柄创建实例
 					sharedInstance = getSingleton(beanName, new ObjectFactory<Object>() {
 						@Override
 						public Object getObject() throws BeansException {
@@ -339,7 +340,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
-				// 对于自定义Scope类型，调用scope的get方法获取实例，由scope决定是否调用ObjectFactory创建新对象
+				// 对于自定义Scope类型，调用scope的get方法获取实例，由scope get方法实现决定是否调用ObjectFactory创建新对象
 				else {
 					String scopeName = mbd.getScope();
 					final Scope scope = this.scopes.get(scopeName);
@@ -378,6 +379,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Check if required type matches the type of the actual bean instance.
 		if (requiredType != null && bean != null && !requiredType.isInstance(bean)) {
 			try {
+				// 使用beanFactory的typeConverter做类型转化。缺省使用SimpleTypeConverter对象，类型转化方式比较多，详情见类型转化相关内容。
 				return getTypeConverter().convertIfNecessary(bean, requiredType);
 			}
 			catch (TypeMismatchException ex) {

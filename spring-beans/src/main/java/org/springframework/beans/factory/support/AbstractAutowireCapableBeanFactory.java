@@ -1161,7 +1161,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}, getAccessControlContext());
 			}
 			else {
-				// spring实例化对象的策略，有Simple和Cglib两种
+				// spring实例化对象的策略，有Simple和Cglib两种，Cglib是Simple的子类，缺省是Cglib
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);

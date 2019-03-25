@@ -73,6 +73,9 @@ public class OrderComparator implements Comparator<Object> {
 		return doCompare(o1, o2, null);
 	}
 
+	/*
+	 * 有序比无序靠前，两个都有序则比较order，两个都无序则相等
+	 */
 	private int doCompare(Object o1, Object o2, OrderSourceProvider sourceProvider) {
 		boolean p1 = (o1 instanceof PriorityOrdered);
 		boolean p2 = (o2 instanceof PriorityOrdered);

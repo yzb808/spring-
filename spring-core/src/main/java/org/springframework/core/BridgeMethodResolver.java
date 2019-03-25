@@ -51,9 +51,11 @@ public abstract class BridgeMethodResolver {
 	 * <p>It is safe to call this method passing in a non-bridge {@link Method} instance.
 	 * In such a case, the supplied {@link Method} instance is returned directly to the caller.
 	 * Callers are <strong>not</strong> required to check for bridging before calling this method.
-	 * @param bridgeMethod the method to introspect
-	 * @return the original method (either the bridged method or the passed-in method
+	 * @param bridgeMethod the method to introspect，桥接方法
+	 * @return the original method (either the bridged method or the passed-in method，被桥接方法
 	 * if no more specific one could be found)
+	 * <p> 泛型是编译器生成的自动代码，桥接方法用于弥补泛型造成的多态效果被破坏的场景。
+	 * 桥接方法和父类被泛型化的方法一致，实现覆盖效果。桥接方法的逻辑通常是对入参做强制类型转换，再回调子类明确泛型类型的方法。
 	 */
 	public static Method findBridgedMethod(Method bridgeMethod) {
 		if (bridgeMethod == null || !bridgeMethod.isBridge()) {
@@ -61,6 +63,7 @@ public abstract class BridgeMethodResolver {
 		}
 
 		// Gather all methods with matching name and parameter size.
+		// 方法名和入参数量相同的方法是疑似桥接方法
 		List<Method> candidateMethods = new ArrayList<Method>();
 		Method[] methods = ReflectionUtils.getAllDeclaredMethods(bridgeMethod.getDeclaringClass());
 		for (Method candidateMethod : methods) {
@@ -101,6 +104,7 @@ public abstract class BridgeMethodResolver {
 
 	/**
 	 * Searches for the bridged method in the given candidates.
+	 * <p> 比较candidateMethod泛型参数的上边界类型是否同桥接方法相同。
 	 * @param candidateMethods the List of candidate Methods
 	 * @param bridgeMethod the bridge method
 	 * @return the bridged method, or {@code null} if none found
@@ -217,6 +221,7 @@ public abstract class BridgeMethodResolver {
 	 * the parameter and return types are the same, it is a 'visibility' bridge method
 	 * introduced in Java 6 to fix http://bugs.sun.com/view_bug.do?bug_id=6342411.
 	 * See also http://stas-blogspot.blogspot.com/2010/03/java-bridge-methods-explained.html
+	 * <p> 方法是否桥接对
 	 * @return whether signatures match as described
 	 */
 	public static boolean isVisibilityBridgeMethodPair(Method bridgeMethod, Method bridgedMethod) {
