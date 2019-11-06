@@ -79,6 +79,7 @@ public interface MethodMatcher {
 	 * {@link #isRuntime()} method returns {@code true}. Invoked
 	 * immediately before potential running of the advice, after any
 	 * advice earlier in the advice chain has run.
+	 * <p> 带参数内容判断的动态匹配（参数动态变化）。
 	 * @param method the candidate method
 	 * @param targetClass the target class (may be {@code null}, in which case
 	 * the candidate class must be taken to be the method's declaring class)

@@ -47,6 +47,8 @@ public interface SingletonBeanRegistry {
 	 * for runtime registration of singletons. As a consequence, a registry
 	 * implementation should synchronize singleton access; it will have to do
 	 * this anyway if it supports a BeanFactory's lazy initialization of singletons.
+	 * <p> 自己创建对象并注册到beanFactory中的bean不会经历bean管理的生命周期。
+	 * 注册自定义definition到beanFactory而创建的bean，会享有bean管理的声明周期。
 	 * @param beanName the name of the bean
 	 * @param singletonObject the existing singleton object
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet

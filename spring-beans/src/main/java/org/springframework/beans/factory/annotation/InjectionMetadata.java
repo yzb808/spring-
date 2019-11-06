@@ -61,6 +61,9 @@ public class InjectionMetadata {
 	}
 
 
+	/*
+	 * 标记metadata会被外部管理（注入）
+	 */
 	public void checkConfigMembers(RootBeanDefinition beanDefinition) {
 		Set<InjectedElement> checkedElements = new LinkedHashSet<InjectedElement>(this.injectedElements.size());
 		for (InjectedElement element : this.injectedElements) {
@@ -81,6 +84,7 @@ public class InjectionMetadata {
 				(this.checkedElements != null ? this.checkedElements : this.injectedElements);
 		if (!elementsToIterate.isEmpty()) {
 			boolean debug = logger.isDebugEnabled();
+			// 不同成员变量或方法独立注入
 			for (InjectedElement element : elementsToIterate) {
 				if (debug) {
 					logger.debug("Processing injected element of bean '" + beanName + "': " + element);
@@ -161,18 +165,22 @@ public class InjectionMetadata {
 
 		/**
 		 * Either this or {@link #getResourceToInject} needs to be overridden.
+		 * <p> 完成Resource修饰的属性注入。
 		 */
 		protected void inject(Object target, String requestingBeanName, PropertyValues pvs) throws Throwable {
 			if (this.isField) {
 				Field field = (Field) this.member;
 				ReflectionUtils.makeAccessible(field);
+				// 为target注入寻找到的相关bean，使用反射，不依赖方法
 				field.set(target, getResourceToInject(target, requestingBeanName));
 			}
 			else {
+				// 对方法入参被Resource修饰的情况，在property里提供了的资源不需要再自动注册
 				if (checkPropertySkipping(pvs)) {
 					return;
 				}
 				try {
+					// 回调被Resource注解修饰的方法，将寻找到的相关bean作为入参传入
 					Method method = (Method) this.member;
 					ReflectionUtils.makeAccessible(method);
 					method.invoke(target, getResourceToInject(target, requestingBeanName));

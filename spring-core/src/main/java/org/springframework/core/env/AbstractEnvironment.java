@@ -105,8 +105,11 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	private final Set<String> defaultProfiles = new LinkedHashSet<String>(getReservedDefaultProfiles());
 
+	// 存放属性列表，常见的有System.getProperties, System.getEnvironment, servletContext, servletConfig
+	// 多个propertySource中可能有相同名称的property，此时优先使用propertySource靠前的property
 	private final MutablePropertySources propertySources = new MutablePropertySources(this.logger);
 
+	// 属性解析器，基于propertySources
 	private final ConfigurablePropertyResolver propertyResolver =
 			new PropertySourcesPropertyResolver(this.propertySources);
 

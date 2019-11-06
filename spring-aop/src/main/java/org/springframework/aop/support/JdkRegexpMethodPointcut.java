@@ -32,6 +32,8 @@ import java.util.regex.PatternSyntaxException;
  * <p>Note: the regular expressions must be a match. For example,
  * {@code .*get.*} will match com.mycom.Foo.getBar().
  * {@code get.*} will not.
+ * <p> 使用jdk正则判断是否满足切面条件，只对方法做过滤。
+ * 任何一个包含的正则满足，则包含；任何一个排除的正则满足，则排除；包含和排除同时满足时，排除。
  *
  * @author Dmitriy Kopylenko
  * @author Rob Harrop
@@ -42,11 +44,13 @@ public class JdkRegexpMethodPointcut extends AbstractRegexpMethodPointcut {
 
 	/**
 	 * Compiled form of the patterns.
+	 * <p> 包含
 	 */
 	private Pattern[] compiledPatterns = new Pattern[0];
 
 	/**
 	 * Compiled form of the exclusion patterns.
+	 * <p> 排除
 	 */
 	private Pattern[] compiledExclusionPatterns = new Pattern[0];
 

@@ -79,6 +79,7 @@ import org.springframework.util.ObjectUtils;
  * from the factory. This means that singleton instances obtained from the factory
  * do not have the same object identity. However, they do have the same interceptors
  * and target, and changing any reference will change all objects.
+ * <p> 相比与proxyFactory，实现了Factory Bean接口
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -94,6 +95,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 
 	/**
 	 * This suffix in a value in an interceptor list indicates to expand globals.
+	 * 简单通配符的方式选择beanFactory中所有满足条件的advisor
 	 */
 	public static final String GLOBAL_SUFFIX = "*";
 
@@ -102,6 +104,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 
 	private String[] interceptorNames;
 
+	// 被代理对象的beanName
 	private String targetName;
 
 	private boolean autodetectInterfaces = true;
@@ -309,12 +312,14 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	private synchronized Object getSingletonInstance() {
 		if (this.singletonInstance == null) {
 			this.targetSource = freshTargetSource();
+			// 自动探测接口 && 有接口需要被代理 && 不指定使用cglib代理
 			if (this.autodetectInterfaces && getProxiedInterfaces().length == 0 && !isProxyTargetClass()) {
 				// Rely on AOP infrastructure to tell us what interfaces to proxy.
 				Class<?> targetClass = getTargetClass();
 				if (targetClass == null) {
 					throw new FactoryBeanNotInitializedException("Cannot determine target class for proxy");
 				}
+				// 获取被代理类的所有接口，注册给AdvisedSupport对象的interfaces成员变量，用于jdk动态代理生成
 				setInterfaces(ClassUtils.getAllInterfacesForClass(targetClass, this.proxyClassLoader));
 			}
 			// Initialize the shared singleton instance.
@@ -371,6 +376,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	/**
 	 * Check the interceptorNames list whether it contains a target name as final element.
 	 * If found, remove the final name from the list and set it as targetName.
+	 * <p> 兼容最后一个元素是target的情况，这种使用方式已经被deprecate
 	 */
 	private void checkInterceptorNames() {
 		if (!ObjectUtils.isEmpty(this.interceptorNames)) {
@@ -418,6 +424,10 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * from a BeanFactory will be refreshed each time a new prototype instance
 	 * is added. Interceptors added programmatically through the factory API
 	 * are unaffected by such changes.
+	 * <p> 基于benaName从beanFactory中搜索满足条件的Advisor或Advice，注册到Advisor调用链中，随后会被逐一回调。
+	 * 模糊匹配只支持Advisor和Interceptor的实现类，显式指定能指向更多Advice（MethodBeforeAdvice，AfterReturningAdvice，ThrowsAdvice），
+	 * （显式指定advice时，advice会被包装成Advisor（DefaultPointcutAdvisor））。
+	 * 最终生成advisor列表。
 	 */
 	private synchronized void initializeAdvisorChain() throws AopConfigException, BeansException {
 		if (this.advisorChainInitialized) {
@@ -441,7 +451,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 				if (logger.isTraceEnabled()) {
 					logger.trace("Configuring advisor or advice '" + name + "'");
 				}
-
+				// 简单通配符方式
 				if (name.endsWith(GLOBAL_SUFFIX)) {
 					if (!(this.beanFactory instanceof ListableBeanFactory)) {
 						throw new AopConfigException(
@@ -450,7 +460,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 					addGlobalAdvisor((ListableBeanFactory) this.beanFactory,
 							name.substring(0, name.length() - GLOBAL_SUFFIX.length()));
 				}
-
+				// 常规方式
 				else {
 					// If we get here, we need to add a named interceptor.
 					// We must check if it's a singleton or prototype.
@@ -507,10 +517,12 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 
 	/**
 	 * Add all global interceptors and pointcuts.
+	 * <p> 获取所有Advisor和Interceptor接口的实现类，判断beanName是否符合prefix规则。
 	 */
 	private void addGlobalAdvisor(ListableBeanFactory beanFactory, String prefix) {
 		String[] globalAdvisorNames =
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Advisor.class);
+		// Interceptor是Advice子类，此处只获取Interceptor，其它Advice子类不获取
 		String[] globalInterceptorNames =
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Interceptor.class);
 		List<Object> beans = new ArrayList<Object>(globalAdvisorNames.length + globalInterceptorNames.length);
@@ -585,6 +597,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 */
 	private Advisor namedBeanToAdvisor(Object next) {
 		try {
+			// 将Advice包装成Advisor（DefaultPointcutAdvisor）
 			return this.advisorAdapterRegistry.wrap(next);
 		}
 		catch (UnknownAdviceTypeException ex) {
@@ -627,6 +640,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	/**
 	 * Used in the interceptor chain where we need to replace a bean with a prototype
 	 * on creating a proxy.
+	 * <p> 简单的多实例advisor封装
 	 */
 	private static class PrototypePlaceholderAdvisor implements Advisor, Serializable {
 

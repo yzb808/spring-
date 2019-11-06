@@ -45,11 +45,13 @@ public interface Advised extends TargetClassAware {
 
 	/**
 	 * Are we proxying the full target class instead of specified interfaces?
+	 * 是否代理了目标类，对应cglib。
 	 */
 	boolean isProxyTargetClass();
 
 	/**
 	 * Return the interfaces proxied by the AOP proxy.
+	 * <p> 被代理实现的接口
 	 * <p>Will not include the target class, which may also be proxied.
 	 */
 	Class<?>[] getProxiedInterfaces();

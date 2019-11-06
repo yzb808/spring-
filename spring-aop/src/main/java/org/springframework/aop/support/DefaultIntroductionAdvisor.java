@@ -33,6 +33,7 @@ import org.springframework.util.ClassUtils;
 /**
  * Simple {@link org.springframework.aop.IntroductionAdvisor} implementation
  * that by default applies to any class.
+ * <p> Introduction追加接口逻辑的简单支撑advisor
  *
  * @author Rod Johnson
  * @author Juergen Hoeller

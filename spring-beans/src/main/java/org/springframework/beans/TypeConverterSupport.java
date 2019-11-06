@@ -23,7 +23,10 @@ import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConverterNotFoundException;
 
 /**
- * Base implementation of the {@link TypeConverter} interface, using a package-private delegate.
+ * 类型转化器的基础实现，而作为BeanWrapperImpl的基础。
+ * 父类是PropertyEditorRegistrySupport意味着具有属性转化器注册的能力。
+ * 转化工作交由typeConverterDelegate实现，delegate需要PropertyEditorRegistry对象又通常由TypeConverterSupport对象承担，相互引用。
+ * <p>Base implementation of the {@link TypeConverter} interface, using a package-private delegate.
  * Mainly serves as base class for {@link BeanWrapperImpl}.
  *
  * @author Juergen Hoeller

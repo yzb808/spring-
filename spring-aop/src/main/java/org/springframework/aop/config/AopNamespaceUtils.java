@@ -92,6 +92,9 @@ public abstract class AopNamespaceUtils {
 		}
 	}
 
+	/*
+	 * 注册自动解析aop注解的bean到beanFactory
+	 */
 	private static void registerComponentIfNecessary(BeanDefinition beanDefinition, ParserContext parserContext) {
 		if (beanDefinition != null) {
 			BeanComponentDefinition componentDefinition =

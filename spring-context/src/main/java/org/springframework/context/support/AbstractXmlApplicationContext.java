@@ -72,7 +72,8 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 
 
 	/**
-	 * 没有额外定制Environment，但已经已经分装了xml read来做definition解析。
+	 * 从xml文件中加载beanDefinition
+	 * 没有额外定制Environment，但已经已经封装了xml read来做definition解析。
 	 * <p>Loads the bean definitions via an XmlBeanDefinitionReader.
 	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
 	 * @see #initBeanDefinitionReader
@@ -121,12 +122,12 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #getResourcePatternResolver
 	 */
 	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
-		// getConfigResources方法来自当前类
+		// getConfigResources方法来自当前类，直接从resource里获得xml
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
 			reader.loadBeanDefinitions(configResources);
 		}
-		// getConfigLocations方法来自父类
+		// getConfigLocations方法来自父类，从路径下的文件中获得xml
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			reader.loadBeanDefinitions(configLocations);

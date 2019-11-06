@@ -38,7 +38,9 @@ import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Internal helper class for converting property values to target types.
+ * 服务于内部的属性转换器，转换器存储在propertyEditorRegistry。
+ * 优先使用PropertyEditor，其次使用conversionService
+ * <p>Internal helper class for converting property values to target types.
  *
  * <p>Works on a given {@link PropertyEditorRegistrySupport} instance.
  * Used as a delegate by {@link BeanWrapperImpl} and {@link SimpleTypeConverter}.
@@ -67,7 +69,7 @@ class TypeConverterDelegate {
 		}
 	}
 
-
+	// 构造TypeConverterDelegate对象，propertyEditorRegistry是必须的。
 	private final PropertyEditorRegistrySupport propertyEditorRegistry;
 
 	private final Object targetObject;
@@ -144,7 +146,10 @@ class TypeConverterDelegate {
 	}
 
 	/**
-	 * Convert the value to the required type (if necessary from a String),
+	 * delegate对外暴露的核心方法，实现类型转换。
+	 * 使用requiredType从propertyEditorRegistry中获取PropertyEditor，优先使用PropertyEditor做类型转换。
+	 * 当不存在PropertyEditor或存在editor却无法转化时，从registry中获取conversionService再做转换。
+	 * <p>Convert the value to the required type (if necessary from a String),
 	 * for the specified property.
 	 * @param propertyName name of the property
 	 * @param oldValue the previous value, if available (may be {@code null})
@@ -182,8 +187,9 @@ class TypeConverterDelegate {
 
 		Object convertedValue = newValue;
 
-		// Value not of required type? 判断能不能转化成集合元素类型
+		// Value not of required type?
 		if (editor != null || (requiredType != null && !ClassUtils.isAssignableValue(requiredType, convertedValue))) {
+			// 集合类型
 			if (typeDescriptor != null && requiredType != null && Collection.class.isAssignableFrom(requiredType) &&
 					convertedValue instanceof String) {
 				// getElementTypeDescriptor方法获取集合元素泛型
@@ -195,9 +201,11 @@ class TypeConverterDelegate {
 					}
 				}
 			}
+			// 寻找默认Editor
 			if (editor == null) {
 				editor = findDefaultEditor(requiredType);
 			}
+			// 类型转换
 			convertedValue = doConvertValue(oldValue, convertedValue, requiredType, editor);
 		}
 
@@ -284,6 +292,7 @@ class TypeConverterDelegate {
 				else if (conversionService != null) {
 					// ConversionService not tried before, probably custom editor found
 					// but editor couldn't produce the required type...
+					// 有editor但没能转换出结果的，再用conversionService试一次。
 					TypeDescriptor sourceTypeDesc = TypeDescriptor.forObject(newValue);
 					if (conversionService.canConvert(sourceTypeDesc, typeDescriptor)) {
 						return (T) conversionService.convert(newValue, sourceTypeDesc, typeDescriptor);
@@ -385,7 +394,8 @@ class TypeConverterDelegate {
 	}
 
 	/**
-	 * Convert the value to the required type (if necessary from a String),
+	 * 只转换string类型。
+	 * <p>Convert the value to the required type (if necessary from a String),
 	 * using the given property editor.
 	 * @param oldValue the previous value, if available (may be {@code null})
 	 * @param newValue the proposed new value

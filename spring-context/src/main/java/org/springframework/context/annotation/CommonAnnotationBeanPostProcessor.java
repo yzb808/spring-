@@ -292,6 +292,9 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	}
 
 
+	/*
+	 * postProcessMergedBeanDefinition方法中寻找到需要被注入的资源（成员变量或方法）
+	 */
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);
@@ -311,10 +314,14 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return true;
 	}
 
+	/*
+	 * 自动注入被注解修饰的成员变量，回调被修饰的方法
+	 */
 	@Override
 	public PropertyValues postProcessPropertyValues(
 			PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException {
 
+		// 寻找Resource注解修饰的成员变量或方法，封装在metadata对象里，随后注入
 		InjectionMetadata metadata = findResourceMetadata(beanName, bean.getClass(), pvs);
 		try {
 			metadata.inject(bean, beanName, pvs);
@@ -326,6 +333,9 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	}
 
 
+	/*
+	 * 寻找所有需要注入位置的元信息，带缓存
+	 */
 	private InjectionMetadata findResourceMetadata(String beanName, final Class<?> clazz, PropertyValues pvs) {
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
 		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
@@ -360,21 +370,25 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			final LinkedList<InjectionMetadata.InjectedElement> currElements =
 					new LinkedList<InjectionMetadata.InjectedElement>();
 
+			// 判断目标类所有成员变量的注解，决定是否要注入
 			ReflectionUtils.doWithLocalFields(targetClass, new ReflectionUtils.FieldCallback() {
 				@Override
 				public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+					// webServiceRefClass注解
 					if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 						if (Modifier.isStatic(field.getModifiers())) {
 							throw new IllegalStateException("@WebServiceRef annotation is not supported on static fields");
 						}
 						currElements.add(new WebServiceRefElement(field, field, null));
 					}
+					// ejbRefClass注解
 					else if (ejbRefClass != null && field.isAnnotationPresent(ejbRefClass)) {
 						if (Modifier.isStatic(field.getModifiers())) {
 							throw new IllegalStateException("@EJB annotation is not supported on static fields");
 						}
 						currElements.add(new EjbRefElement(field, field, null));
 					}
+					// resource注解
 					else if (field.isAnnotationPresent(Resource.class)) {
 						if (Modifier.isStatic(field.getModifiers())) {
 							throw new IllegalStateException("@Resource annotation is not supported on static fields");
@@ -414,6 +428,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 							PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
 							currElements.add(new EjbRefElement(method, bridgedMethod, pd));
 						}
+						// Resource注解修饰只有一个参数的方法
 						else if (bridgedMethod.isAnnotationPresent(Resource.class)) {
 							if (Modifier.isStatic(method.getModifiers())) {
 								throw new IllegalStateException("@Resource annotation is not supported on static methods");
@@ -442,6 +457,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	/**
 	 * Obtain a lazily resolving resource proxy for the given name and type,
 	 * delegating to {@link #getResource} on demand once a method call comes in.
+	 * <p> 返回懒加载对象
 	 * @param element the descriptor for the annotated field/method
 	 * @param requestingBeanName the name of the requesting bean
 	 * @return the resource object (never {@code null})
@@ -501,6 +517,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	/**
 	 * Obtain a resource object for the given name and type through autowiring
 	 * based on the given factory.
+	 * <p> spring Resource注解处理逻辑，优先通过成员变量名称获取，其次通过类型
 	 * @param factory the factory to autowire against
 	 * @param element the descriptor for the annotated field/method
 	 * @param requestingBeanName the name of the requesting bean
@@ -514,12 +531,14 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		Set<String> autowiredBeanNames;
 		String name = element.name;
 
+		// 使用默认名称且在beanFactory无该名称的bean时，通过类型获取
 		if (this.fallbackToDefaultTypeMatch && element.isDefaultName &&
 				factory instanceof AutowireCapableBeanFactory && !factory.containsBean(name)) {
 			autowiredBeanNames = new LinkedHashSet<String>();
 			resource = ((AutowireCapableBeanFactory) factory).resolveDependency(
 					element.getDependencyDescriptor(), requestingBeanName, autowiredBeanNames, null);
 		}
+		// 使用名称和类型获取，找不到会抛出异常
 		else {
 			resource = factory.getBean(name, element.lookupType);
 			autowiredBeanNames = Collections.singleton(name);
@@ -529,6 +548,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			ConfigurableBeanFactory beanFactory = (ConfigurableBeanFactory) factory;
 			for (String autowiredBeanName : autowiredBeanNames) {
 				if (beanFactory.containsBean(autowiredBeanName)) {
+					// 注册bean的依赖关系，用于顺序销毁
 					beanFactory.registerDependentBean(autowiredBeanName, requestingBeanName);
 				}
 			}
@@ -575,6 +595,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		 */
 		public final DependencyDescriptor getDependencyDescriptor() {
 			if (this.isField) {
+				// 期望获取的类型
 				return new LookupDependencyDescriptor((Field) this.member, this.lookupType);
 			}
 			else {
@@ -599,12 +620,15 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			String resourceName = resource.name();
 			Class<?> resourceType = resource.type();
 			this.isDefaultName = !StringUtils.hasLength(resourceName);
+			// Resource name属性如果为空，则会用成员的名称填充
 			if (this.isDefaultName) {
 				resourceName = this.member.getName();
+				// setXXX方法特殊处理
 				if (this.member instanceof Method && resourceName.startsWith("set") && resourceName.length() > 3) {
 					resourceName = Introspector.decapitalize(resourceName.substring(3));
 				}
 			}
+			// 使用内嵌变量渲染
 			else if (embeddedValueResolver != null) {
 				resourceName = embeddedValueResolver.resolveStringValue(resourceName);
 			}

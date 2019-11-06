@@ -71,7 +71,10 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	public static final TargetSource EMPTY_TARGET_SOURCE = EmptyTargetSource.INSTANCE;
 
 
-	/** Package-protected to allow direct access for efficiency */
+	/** 
+	 * Package-protected to allow direct access for efficiency
+	 * 获取target的对象，可以将对象池化 
+	 */
 	TargetSource targetSource = EMPTY_TARGET_SOURCE;
 
 	/** Whether the Advisors are already filtered for the specific target class */
@@ -92,6 +95,7 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	/**
 	 * List of Advisors. If an Advice is added, it will be wrapped
 	 * in an Advisor before being added to this List.
+	 * <p> 链式的advisor会被顺序回调
 	 */
 	private List<Advisor> advisors = new LinkedList<Advisor>();
 
@@ -129,6 +133,7 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	/**
 	 * Set the given object as target.
 	 * Will create a SingletonTargetSource for the object.
+	 * <p> property中的target在此处注入，描述需要被代理的对象，此时默认封装SingletonTargetSource的targetSource
 	 * @see #setTargetSource
 	 * @see org.springframework.aop.target.SingletonTargetSource
 	 */
@@ -486,6 +491,7 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 		MethodCacheKey cacheKey = new MethodCacheKey(method);
 		List<Object> cached = this.methodCache.get(cacheKey);
 		if (cached == null) {
+			// 获取目标类相关的Interceptor列表（不同Advisor对切面类和方法有要求）
 			cached = this.advisorChainFactory.getInterceptorsAndDynamicInterceptionAdvice(
 					this, method, targetClass);
 			this.methodCache.put(cacheKey, cached);

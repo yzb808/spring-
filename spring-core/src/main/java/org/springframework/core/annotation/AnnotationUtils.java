@@ -649,6 +649,7 @@ public abstract class AnnotationUtils {
 	 * <p>This method explicitly handles class-level annotations which are not
 	 * declared as {@link java.lang.annotation.Inherited inherited} <em>as well
 	 * as meta-annotations and annotations on interfaces</em>.
+	 * 该方法遍历修饰注解a的注解b，即使注解b没有继承属性。
 	 * <p>The algorithm operates as follows:
 	 * <ol>
 	 * <li>Search for the annotation on the given class and return it if found.

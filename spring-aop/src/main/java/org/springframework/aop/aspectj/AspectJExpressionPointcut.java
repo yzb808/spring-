@@ -65,6 +65,7 @@ import org.springframework.util.StringUtils;
  *
  * <p>The pointcut expression value is an AspectJ expression. This can
  * reference other pointcuts and use composition and other operations.
+ * <p> 兼容aspectj切面表达式的spring pointcut
  *
  * <p>Naturally, as this is to be processed by Spring AOP's proxy-based model,
  * only method execution pointcuts are supported.
@@ -101,6 +102,7 @@ public class AspectJExpressionPointcut extends AbstractExpressionPointcut
 
 	private Class<?> pointcutDeclarationScope;
 
+	// 被拦截方法入参名称
 	private String[] pointcutParameterNames = new String[0];
 
 	private Class<?>[] pointcutParameterTypes = new Class<?>[0];

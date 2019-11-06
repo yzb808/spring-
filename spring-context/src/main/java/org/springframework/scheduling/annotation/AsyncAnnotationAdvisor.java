@@ -44,6 +44,7 @@ import org.springframework.util.ClassUtils;
  * annotation as well, treating it exactly like Spring's own {@code Async}.
  * Furthermore, a custom async annotation type may get specified through the
  * {@link #setAsyncAnnotationType "asyncAnnotationType"} property.
+ * <p> 基于Async注解，对被修饰的方法执行异步，并发调用。
  *
  * @author Juergen Hoeller
  * @since 3.0
@@ -79,6 +80,7 @@ public class AsyncAnnotationAdvisor extends AbstractPointcutAdvisor implements B
 	 */
 	@SuppressWarnings("unchecked")
 	public AsyncAnnotationAdvisor(Executor executor, AsyncUncaughtExceptionHandler exceptionHandler) {
+		// 需要被拦截的注解
 		Set<Class<? extends Annotation>> asyncAnnotationTypes = new LinkedHashSet<Class<? extends Annotation>>(2);
 		asyncAnnotationTypes.add(Async.class);
 		try {
@@ -156,12 +158,15 @@ public class AsyncAnnotationAdvisor extends AbstractPointcutAdvisor implements B
 	protected Pointcut buildPointcut(Set<Class<? extends Annotation>> asyncAnnotationTypes) {
 		ComposablePointcut result = null;
 		for (Class<? extends Annotation> asyncAnnotationType : asyncAnnotationTypes) {
+			// 注解拦截的pointcut
 			Pointcut cpc = new AnnotationMatchingPointcut(asyncAnnotationType, true);
 			Pointcut mpc = AnnotationMatchingPointcut.forMethodAnnotation(asyncAnnotationType);
 			if (result == null) {
+				// 复合pointcut
 				result = new ComposablePointcut(cpc);
 			}
 			else {
+				// union，或
 				result.union(cpc);
 			}
 			result = result.union(mpc);

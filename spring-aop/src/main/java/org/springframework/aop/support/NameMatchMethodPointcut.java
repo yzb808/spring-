@@ -28,6 +28,7 @@ import org.springframework.util.PatternMatchUtils;
 /**
  * Pointcut bean for simple method name matches, as alternative to regexp patterns.
  * Does not handle overloaded methods: all methods with a given name will be eligible.
+ * <p> 简单的pointcut实现，只对方法名称过滤，支持简单正则（*）
  *
  * @author Juergen Hoeller
  * @author Rod Johnson
@@ -91,6 +92,7 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 	 * Return if the given method name matches the mapped name.
 	 * <p>The default implementation checks for "xxx*", "*xxx" and "*xxx*" matches,
 	 * as well as direct equality. Can be overridden in subclasses.
+	 * <p> 简单正则
 	 * @param methodName the method name of the class
 	 * @param mappedName the name in the descriptor
 	 * @return if the names match

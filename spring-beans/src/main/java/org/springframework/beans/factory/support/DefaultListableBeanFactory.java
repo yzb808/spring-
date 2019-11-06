@@ -1073,6 +1073,18 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 	}
 
+	/*
+	 * 寻找可用依赖。
+	 * 判断注解中是否有表达式，从而决定进入表达式计算环节还是bean获取环节。
+	 * 表达式计算环节：
+	 * 1. 嵌入值转化，${value:default}，默认用Environment转化
+	 * 2. spel计算
+	 * 3. TypeConverter类型转换
+	 * bean获取环节：
+	 * 1. 根据类型获取bean
+	 * 2. 如果没有，判断require属性
+	 * 3. 如果存在多个，则试图通过primary和quafily找出一个
+	 */
 	public Object doResolveDependency(DependencyDescriptor descriptor, String beanName,
 			Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
 
@@ -1083,27 +1095,36 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				return shortcut;
 			}
 
+			// 期望获得的类型
 			Class<?> type = descriptor.getDependencyType();
+			// 解析注解属性内容，例如@Value("${java.version}")，不为空进入表达式计算环节
 			Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
 			if (value != null) {
 				if (value instanceof String) {
+					// 使用beanFactory嵌入值转化器解析表达式，默认从Environment中获取内容做渲染，${value:default}
 					String strVal = resolveEmbeddedValue((String) value);
 					BeanDefinition bd = (beanName != null && containsBean(beanName) ? getMergedBeanDefinition(beanName) : null);
+					// 再用默认的spel解析器计算表达式
 					value = evaluateBeanDefinitionString(strVal, bd);
 				}
+				// 最后做类型转换
 				TypeConverter converter = (typeConverter != null ? typeConverter : getTypeConverter());
+				// 
 				return (descriptor.getField() != null ?
 						converter.convertIfNecessary(value, type, descriptor.getField()) :
 						converter.convertIfNecessary(value, type, descriptor.getMethodParameter()));
 			}
 
+			// 注解属性为空，进入bean获取环节
 			Object multipleBeans = resolveMultipleBeans(descriptor, beanName, autowiredBeanNames, typeConverter);
 			if (multipleBeans != null) {
 				return multipleBeans;
 			}
 
+			// 通过类型寻找合适的bean
 			Map<String, Object> matchingBeans = findAutowireCandidates(beanName, type, descriptor);
 			if (matchingBeans.isEmpty()) {
+				// 判断是否必须
 				if (isRequired(descriptor)) {
 					raiseNoMatchingBeanFound(type, descriptor.getResolvableType(), descriptor);
 				}
@@ -1114,6 +1135,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			Object instanceCandidate;
 
 			if (matchingBeans.size() > 1) {
+				// 寻找primary或Priority属性，从而从多个合适的bean中选出一个，或者bean名称同待注入变量名称相同
 				autowiredBeanName = determineAutowireCandidate(matchingBeans, descriptor);
 				if (autowiredBeanName == null) {
 					if (isRequired(descriptor) || !indicatesMultipleBeans(type)) {
@@ -1138,6 +1160,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			if (autowiredBeanNames != null) {
 				autowiredBeanNames.add(autowiredBeanName);
 			}
+			// 如果寻找到的结果是class类型，则继续迭代
 			return (instanceCandidate instanceof Class ?
 					descriptor.resolveCandidate(autowiredBeanName, type, this) : instanceCandidate);
 		}
@@ -1347,6 +1370,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			String candidateName = entry.getKey();
 			Object beanInstance = entry.getValue();
 			if ((beanInstance != null && this.resolvableDependencies.containsValue(beanInstance)) ||
+					// bean名称与被注入属性名称相同（编译时变量名称被压缩就不行了）
 					matchesBeanName(candidateName, descriptor.getDependencyName())) {
 				return candidateName;
 			}

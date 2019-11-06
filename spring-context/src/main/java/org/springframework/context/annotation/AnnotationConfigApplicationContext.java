@@ -82,6 +82,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 		this();
+		// 注解类先被解析成definition记录在beanFactory里
 		register(annotatedClasses);
 		refresh();
 	}

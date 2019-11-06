@@ -29,7 +29,8 @@ import org.springframework.util.ObjectUtils;
  * Pointcut and method matcher for use in simple <b>cflow</b>-style pointcut.
  * Note that evaluating such pointcuts is 10-15 times slower than evaluating
  * normal pointcuts, but they are useful in some cases.
- *
+ * <p> 被代理类的方法，在被clazz类的methodName方法调用时，被切面注入，可能存在效率问题。
+ * 
  * @author Rod Johnson
  * @author Rob Harrop
  * @author Juergen Hoeller
@@ -92,6 +93,7 @@ public class ControlFlowPointcut implements Pointcut, ClassFilter, MethodMatcher
 	public boolean matches(Method method, Class<?> targetClass, Object... args) {
 		this.evaluations++;
 
+		// 递归调用栈
 		for (StackTraceElement element : new Throwable().getStackTrace()) {
 			if (element.getClassName().equals(this.clazz.getName()) &&
 					(this.methodName == null || element.getMethodName().equals(this.methodName))) {

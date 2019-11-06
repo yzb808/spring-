@@ -29,6 +29,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
  * support use of {@link Async#value()} executor qualification mechanism introduced in
  * Spring 3.1.2. Supports detecting qualifier metadata via {@code @Async} at the method or
  * declaring class level. See {@link #getExecutorQualifier(Method)} for details.
+ * <p> 基于注解的异步并发advice
  *
  * @author Chris Beams
  * @author Stephane Nicoll

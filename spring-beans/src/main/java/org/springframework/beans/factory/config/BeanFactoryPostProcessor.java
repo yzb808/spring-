@@ -49,6 +49,9 @@ public interface BeanFactoryPostProcessor {
 	 * initialization. All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for overriding or adding
 	 * properties even to eager-initializing beans.
+	 * <p> 接口入参是BeanFactory，factory只用于操作bean，不负责definition管理。
+	 * <p> 可以在方法实现中改变beanFactory中的definition，但不应该新增，新增BeanFactoryPostProcessor的类不会再被当作postProcessor回调。
+	 * <p> 新增definition基于BeanDefinitionRegistryPostProcessor。
 	 * @param beanFactory the bean factory used by the application context
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */

@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * Simple Pointcut that looks for a specific Java 5 annotation
  * being present on a {@link #forClassAnnotation class} or
  * {@link #forMethodAnnotation method}.
+ * <p> 简单的注解pointcut，判断类和方法上是否有指定注解，从而决定是否满足切面条件
  *
  * @author Juergen Hoeller
  * @since 2.0

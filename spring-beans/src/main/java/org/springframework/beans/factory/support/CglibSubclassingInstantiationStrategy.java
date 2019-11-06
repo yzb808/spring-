@@ -281,6 +281,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			// Cast is safe, as CallbackFilter filters are used selectively.
 			LookupOverride lo = (LookupOverride) getBeanDefinition().getMethodOverrides().getOverride(method);
 			Object[] argsToUse = (args.length > 0 ? args : null);  // if no-arg, don't insist on args at all
+			// 返回LookupOverride中指定的bean对象，替换原方法返回
 			if (StringUtils.hasText(lo.getBeanName())) {
 				return this.owner.getBean(lo.getBeanName(), argsToUse);
 			}
@@ -304,6 +305,10 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			this.owner = owner;
 		}
 
+		/**
+		 * reimplement方法中不能再反射调用method方法，因为该method以及被代理，反射调用陷入死循环造成栈溢出。
+		 * cglib方面应该使用mp.invokeSuper(...)回调原方法，但mp对象没有传入reimplement方法。
+		 */
 		@Override
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy mp) throws Throwable {
 			ReplaceOverride ro = (ReplaceOverride) getBeanDefinition().getMethodOverrides().getOverride(method);

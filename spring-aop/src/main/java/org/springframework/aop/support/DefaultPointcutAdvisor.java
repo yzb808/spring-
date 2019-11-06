@@ -28,6 +28,7 @@ import org.springframework.aop.Pointcut;
  * <p>This is the most commonly used Advisor implementation. It can be used
  * with any pointcut and advice type, except for introductions. There is
  * normally no need to subclass this class, or to implement custom Advisors.
+ * <p> 简单实现。
  *
  * @author Rod Johnson
  * @author Juergen Hoeller

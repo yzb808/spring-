@@ -67,11 +67,14 @@ public class TypeDescriptor implements Serializable {
 		}
 	}
 
-
+	
+	// 原始类型
 	private final Class<?> type;
 
+	// 封装类型
 	private final ResolvableType resolvableType;
 
+	// 注解
 	private final AnnotatedElementAdapter annotatedElement;
 
 
@@ -180,7 +183,8 @@ public class TypeDescriptor implements Serializable {
 	 * declared as {@code java.lang.Object} would be narrowed to {@code java.util.HashMap}
 	 * if it was set to a {@code java.util.HashMap} value. The narrowed TypeDescriptor
 	 * can then be used to convert the HashMap to some other type. Annotation and nested
-	 * type context is preserved by the narrowed copy.
+	 * type context is c by the narrowed copy.
+	 * <p>生成入参value的TypeDescriptor，继承this的嵌套类型和注解。
 	 * @param value the value to use for narrowing this type descriptor
 	 * @return this TypeDescriptor narrowed (returns a copy with its type updated to the
 	 * class of the provided value)
@@ -196,6 +200,7 @@ public class TypeDescriptor implements Serializable {
 	/**
 	 * Cast this {@link TypeDescriptor} to a superclass or implemented interface
 	 * preserving annotations and nested type context.
+	 * <p>转换成父类或夫接口类型。
 	 * @param superType the super type to cast to (can be {@code null})
 	 * @return a new TypeDescriptor for the up-cast type
 	 * @throws IllegalArgumentException if this type is not assignable to the super-type

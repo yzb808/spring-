@@ -39,6 +39,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -527,7 +529,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
-					// MergedBeanDefinitionPostProcessor 多是一些spring内部使用到的postProcessor
+					// MergedBeanDefinitionPostProcessor多是一些spring内部使用到的postProcessor，用于使用或修改beanDefinition
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
 				catch (Throwable ex) {
@@ -606,7 +608,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Register bean as disposable.
 		try {
-			// 注册对象为需要被销毁的状态，多例不需要销毁，单例销毁有spring容器控制，scope销毁要scope自己编写
+			// 注册对象为需要被销毁的状态，多例不需要销毁，单例销毁由spring容器控制，scope销毁要scope自己编写
 			registerDisposableBeanIfNecessary(beanName, bean, mbd);
 		}
 		catch (BeanDefinitionValidationException ex) {
@@ -1022,7 +1024,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
-					// 如果BeforeInstantiation返回实例，则立刻进行AfterInitialization
+					// 如果BeforeInstantiation（实例化）返回实例，则立刻进行AfterInitialization（初始化）
 					if (bean != null) {
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
@@ -1165,6 +1167,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
+			// 赋予bw所有beanFactory的属性转化能力（conversionService和propertyEditorRegistrars）
 			initBeanWrapper(bw);
 			return bw;
 		}
@@ -1238,7 +1241,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// to support styles of field injection.
 		boolean continueWithPropertyPopulation = true;
 
-		// 在注入属性之前调用postProcessAfterInstantiation方法，完成实例化后的回调
+		// 在注入属性之前调用postProcessAfterInstantiation方法，完成实例化后的回调。postProcessBeforeInstantiation方法在实例化之前已经被回调。
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1538,6 +1541,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		TypeConverter converter = getCustomTypeConverter();
+		// 缺省的TypeConverter是beanWrapper（默认beanWrapper具有所有beanFactory的转换能力）
 		if (converter == null) {
 			converter = bw;
 		}
@@ -1560,6 +1564,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				boolean convertible = bw.isWritableProperty(propertyName) &&
 						!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
 				if (convertible) {
+					// 属性转化
 					convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
 				}
 				// Possibly store converted value in merged bean definition,
@@ -1646,6 +1651,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
 			// 2.回调BeanPostProcessor接口实现的postProcessBeforeInitialization（初始化之前）方法
+			// 被@PostConstruct修饰的方法会在此处被回调，基于CommonAnnotationBeanPostProcessor的实现
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 

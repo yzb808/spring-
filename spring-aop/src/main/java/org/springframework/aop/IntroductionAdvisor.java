@@ -24,6 +24,7 @@ package org.springframework.aop;
  *
  * <p>Introduction is the implementation of additional interfaces
  * (not implemented by a target) via AOP advice.
+ * <p> 类增强（追加接口）
  *
  * @author Rod Johnson
  * @since 04.04.2003

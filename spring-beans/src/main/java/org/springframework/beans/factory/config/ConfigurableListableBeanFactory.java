@@ -49,7 +49,7 @@ public interface ConfigurableListableBeanFactory
 	void ignoreDependencyType(Class<?> type);
 
 	/**
-	 * 扫描接口setXxx方法，忽略xxx属性的自动注入（注入逻辑通常是beanPostProcess实现）
+	 * 扫描接口setXxx方法，忽略xxx属性的自动注入（注入逻辑通常交由其它逻辑实现，例如特殊的beanPostProcess）
 	 * <p>Ignore the given dependency interface for autowiring.
 	 * <p>This will typically be used by application contexts to register
 	 * dependencies that are resolved in other ways, like BeanFactory through

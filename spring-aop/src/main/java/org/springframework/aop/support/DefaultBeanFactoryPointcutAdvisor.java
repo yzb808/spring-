@@ -26,6 +26,7 @@ import org.springframework.aop.Pointcut;
  * <p>Specifying the name of an advice bean instead of the advice object itself
  * (if running within a BeanFactory) increases loose coupling at initialization time,
  * in order to not initialize the advice object until the pointcut actually matches.
+ * <p> 传入adviceName而不是advice对象，接触advisor和advice的耦合，spring创建advisor对象时，无需先创建advice对象，特殊场景下有用。
  *
  * @author Juergen Hoeller
  * @since 2.0.2

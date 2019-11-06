@@ -141,7 +141,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 
 	/**
-	 * 被value，Autowired，Inject注解修饰的内容要自动注入
+	 * 被Value，Autowired，Inject注解修饰的内容要自动注入
 	 * <p>Create a new AutowiredAnnotationBeanPostProcessor
 	 * for Spring's standard {@link Autowired} annotation.
 	 * <p>Also supports JSR-330's {@link javax.inject.Inject} annotation, if available.
@@ -585,6 +585,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				Set<String> autowiredBeanNames = new LinkedHashSet<String>(1);
 				TypeConverter typeConverter = beanFactory.getTypeConverter();
 				try {
+					// 使用beanFactory解析可用依赖
 					value = beanFactory.resolveDependency(desc, beanName, autowiredBeanNames, typeConverter);
 				}
 				catch (BeansException ex) {
@@ -613,6 +614,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				}
 			}
 			if (value != null) {
+				// 反射注入
 				ReflectionUtils.makeAccessible(field);
 				field.set(bean, value);
 			}

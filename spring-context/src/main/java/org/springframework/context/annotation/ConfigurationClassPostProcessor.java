@@ -67,7 +67,8 @@ import org.springframework.util.ClassUtils;
 import static org.springframework.context.annotation.AnnotationConfigUtils.*;
 
 /**
- * 用于解析@Configuration标签修饰的类
+ * 用于解析@Configuration标签修饰的类。
+ * <p> 继承PriorityOrdered接口，因此会在refresh阶段的invokeBeanFactoryPostProcessors方法中被最优先执行，因为该processor可能产生新的processor。
  * <p>{@link BeanFactoryPostProcessor} used for bootstrapping processing of
  * {@link Configuration @Configuration} classes.
  *
@@ -246,10 +247,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		if (!this.registriesPostProcessed.contains(factoryId)) {
 			// BeanDefinitionRegistryPostProcessor hook apparently not supported...
 			// Simply call processConfigurationClasses lazily at this point then.
+			// 补偿，强行把beanFactory当DefinitionRegistry使用，破坏了postProcessBeanFactory方法的定位。
 			processConfigBeanDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
 
+		// 修改configuration definition
 		enhanceConfigurationClasses(beanFactory);
+		// 寻找ImportAware接口的实现类，回调setImportMetadata方法
 		beanFactory.addBeanPostProcessor(new ImportAwareBeanPostProcessor(beanFactory));
 	}
 
@@ -391,6 +395,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			return;
 		}
 		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
+		// 增强每个ConfigurationClass，主要处理@bean注解声明bean的scope作用域
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();
 			// If a @Configuration class gets proxied, always proxy the target class

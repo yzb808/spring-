@@ -103,7 +103,7 @@ class ConstructorResolver {
 			Constructor<?>[] chosenCtors, final Object[] explicitArgs) {
 
 		BeanWrapperImpl bw = new BeanWrapperImpl();
-		// 这边给新建的BeanWrapper注册beanFactory中记录的用户自定义属性转化器
+		// 这边给新建的BeanWrapper注册beanFactory中记录的属性转化器
 		this.beanFactory.initBeanWrapper(bw);
 
 		Constructor<?> constructorToUse = null;

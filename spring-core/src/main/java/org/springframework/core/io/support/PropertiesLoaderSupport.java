@@ -42,10 +42,13 @@ public abstract class PropertiesLoaderSupport {
 	/** Logger available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	// 显式注入的属性
 	protected Properties[] localProperties;
 
+	// 同名时是否优先使用localProperties的属性
 	protected boolean localOverride = false;
 
+	// 记录属性的Resource
 	private Resource[] locations;
 
 	private boolean ignoreResourceNotFound = false;

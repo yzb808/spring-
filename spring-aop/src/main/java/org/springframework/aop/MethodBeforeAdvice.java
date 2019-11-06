@@ -31,6 +31,7 @@ public interface MethodBeforeAdvice extends BeforeAdvice {
 
 	/**
 	 * Callback before a given method is invoked.
+	 * <p> spring内置adapt，转化此类advice到AdviceInterceptor。
 	 * @param method method being invoked
 	 * @param args arguments to the method
 	 * @param target target of the method invocation. May be {@code null}.

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 
 /**
  * PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors里特别回调postProcessBeanDefinitionRegistry()，
- * 入参传入的是beanFactory对象，该接口提供了一个修改definition的机会，spring注解就是使用该方式解析注解，从而生成bean，
+ * 入参传入的是beanFactory对象，该接口提供了一个新增或修改definition的机会，spring注解就是使用该方式解析注解，从而注册definition，
  * 详情见ConfigurationClassPostProcessor
  * <p>Extension to the standard {@link BeanFactoryPostProcessor} SPI, allowing for
  * the registration of further bean definitions <i>before</i> regular
@@ -40,6 +40,8 @@ public interface BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProc
 	 * standard initialization. All regular bean definitions will have been loaded,
 	 * but no beans will have been instantiated yet. This allows for adding further
 	 * bean definitions before the next post-processing phase kicks in.
+	 * <p> 调用该方法时，bean实例仍未创建。入参是definitionRegistry，使得用户能够增加或修改definition。
+	 * <p> 鉴于支持向beanFactory中注册新的BeanDefinitionRegistryPostProcessor，因此spring会循环检测beanFactory，直到所有processor都被回调。
 	 * @param registry the bean definition registry used by the application context
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */

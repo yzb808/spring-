@@ -119,6 +119,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * fields and methods as well as applying all standard bean initialization callbacks.
 	 * It does <i>not</> imply traditional by-name or by-type autowiring of properties;
 	 * use {@link #createBean(Class, int, boolean)} for those purposes.
+	 * <p>AutowireCapableBeanFactory才有createBean接口，BeanFactory没有。
 	 * @param beanClass the class of the bean to create
 	 * @return the new bean instance
 	 * @throws BeansException if instantiation or wiring failed
@@ -126,7 +127,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	<T> T createBean(Class<T> beanClass) throws BeansException;
 
 	/**
-	 * 该方法会经历postProcessAfterInstantiation方法的过滤，但没有properties值，因此只适用于注解声明的属性注入
+	 * 该方法会经历postProcessAfterInstantiation方法的过滤，但没有properties值，因此只适用于注解声明的属性注入。
 	 * <p>Populate the given bean instance through applying after-instantiation callbacks
 	 * and bean property post-processing (e.g. for annotation-driven injection).
 	 * <p>Note: This is essentially intended for (re-)populating annotated fields and
@@ -212,7 +213,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object autowire(Class<?> beanClass, int autowireMode, boolean dependencyCheck) throws BeansException;
 
 	/**
-	 * 提供对象和自动化注入方式，为对象注入属性
+	 * 提供对象和自动化注入方式，为对象注入属性。同autowireBean相似，多了两个参数。
 	 * Autowire the bean properties of the given bean instance by name or type.
 	 * Can also be invoked with {@code AUTOWIRE_NO} in order to just apply
 	 * after-instantiation callbacks (e.g. for annotation-driven injection).
@@ -345,7 +346,9 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object resolveDependency(DependencyDescriptor descriptor, String requestingBeanName) throws BeansException;
 
 	/**
-	 * Resolve the specified dependency against the beans defined in this factory.
+	 * 寻找需要被依赖注入的对象，descriptor是被注入成员（例如被@Resource修饰的成员变量），
+	 * requestingBeanName是请求注入的bean（被用于管理依赖关系）
+	 * <p>Resolve the specified dependency against the beans defined in this factory.
 	 * @param descriptor the descriptor for the dependency (field/method/constructor)
 	 * @param requestingBeanName the name of the bean which declares the given dependency
 	 * @param autowiredBeanNames a Set that all names of autowired beans (used for

@@ -24,6 +24,7 @@ import java.beans.PropertyEditor;
  *
  * <p>Extended by {@link BeanWrapper}; implemented by {@link BeanWrapperImpl}
  * and {@link org.springframework.validation.DataBinder}.
+ * <p> PropertyEditor注册器，注册和寻找PropertyEditor
  *
  * @author Juergen Hoeller
  * @since 1.2.6
@@ -42,7 +43,7 @@ public interface PropertyEditorRegistry {
 	void registerCustomEditor(Class<?> requiredType, PropertyEditor propertyEditor);
 
 	/**
-	 * Register the given custom property editor for the given type and
+	 * <p>Register the given custom property editor for the given type and
 	 * property, or for all properties of the given type.
 	 * <p>If the property path denotes an array or Collection property,
 	 * the editor will get applied either to the array/Collection itself

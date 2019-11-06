@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  * {@code
  * Pointcut pc = new ComposablePointcut().union(classFilter).intersection(methodMatcher).intersection(pointcut);
  * }
+ * <p> 简单的自由组合classFilter和methodMatcher的类，可以对classFilter，methodMatcher，pointcut做组合，union是或，intersection是与
  *
  * @author Rod Johnson
  * @author Juergen Hoeller

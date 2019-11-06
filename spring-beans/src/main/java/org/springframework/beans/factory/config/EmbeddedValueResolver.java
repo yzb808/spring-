@@ -37,6 +37,7 @@ public class EmbeddedValueResolver implements StringValueResolver {
 
 	private final BeanExpressionContext exprContext;
 
+	// beanFactory的表达式解析器，默认是spel解析器
 	private final BeanExpressionResolver exprResolver;
 
 
@@ -48,8 +49,10 @@ public class EmbeddedValueResolver implements StringValueResolver {
 
 	@Override
 	public String resolveStringValue(String strVal) {
+		// 首先使用beanFactory.resolveEmbeddedValue() 获得嵌入值，默认情况下从Environment中寻找该属性
 		String value = this.exprContext.getBeanFactory().resolveEmbeddedValue(strVal);
 		if (this.exprResolver != null && value != null) {
+			// 其次使用表达式解析工具计算表达式，默认是spel
 			Object evaluated = this.exprResolver.evaluate(value, this.exprContext);
 			value = (evaluated != null ? evaluated.toString() : null);
 		}

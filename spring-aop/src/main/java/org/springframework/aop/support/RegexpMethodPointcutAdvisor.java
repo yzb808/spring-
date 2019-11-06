@@ -34,6 +34,7 @@ import org.springframework.util.ObjectUtils;
  * <p>Can delegate to any {@link AbstractRegexpMethodPointcut} subclass.
  * By default, {@link JdkRegexpMethodPointcut} will be used. To choose
  * a specific one, override the {@link #createPointcut} method.
+ * <p> 基于jdk正则匹配的简单实现。
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -44,6 +45,9 @@ import org.springframework.util.ObjectUtils;
 @SuppressWarnings("serial")
 public class RegexpMethodPointcutAdvisor extends AbstractGenericPointcutAdvisor {
 
+	/*
+	 * 模板要匹配方法的全名，含包路径
+	 */
 	private String[] patterns;
 
 	private AbstractRegexpMethodPointcut pointcut;

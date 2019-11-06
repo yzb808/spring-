@@ -117,8 +117,10 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating JDK dynamic proxy: target source is " + this.advised.getTargetSource());
 		}
+		// 封装三个sprig内置接口
 		Class<?>[] proxiedInterfaces = AopProxyUtils.completeProxiedInterfaces(this.advised, true);
 		findDefinedEqualsAndHashCodeMethods(proxiedInterfaces);
+		// JdkDynamicAopProxy类本身也是InvocationHandler的子类
 		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 	}
 
@@ -149,6 +151,10 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 	 * Implementation of {@code InvocationHandler.invoke}.
 	 * <p>Callers will see exactly the exception thrown by the target,
 	 * unless a hook method throws an exception.
+	 * <p> 基于jdk代理生成的动态类，会使用回调invoke方法的方式实现所有声明接口中的方法，
+	 * 这里的invoke方法执行有一定复杂度，这些都是使用jdk动态代理需要承担的额外开销，因此对于被代理
+	 * 方法本身比较简单调用次数又非常频繁的场景，使用jdk做动态代理的额外开销就比较明显了。
+	 * spring内部实现中，ProxyConfig有optimize属性，当为true时会尽可能的使用cglib做动态代理。
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -161,21 +167,27 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		Object target = null;
 
 		try {
+			// 被代理接口没有实现equals方法，则使用spring内置equals方法
 			if (!this.equalsDefined && AopUtils.isEqualsMethod(method)) {
 				// The target does not implement the equals(Object) method itself.
 				return equals(args[0]);
 			}
+			// hashcode处理方式同equal
 			else if (!this.hashCodeDefined && AopUtils.isHashCodeMethod(method)) {
 				// The target does not implement the hashCode() method itself.
 				return hashCode();
 			}
+			// spring内置被代理接口DecoratingProxy的方法
 			else if (method.getDeclaringClass() == DecoratingProxy.class) {
 				// There is only getDecoratedClass() declared -> dispatch to proxy config.
+				// 实现DecoratingProxy接口方法，返回最本质的被代理对象
 				return AopProxyUtils.ultimateTargetClass(this.advised);
 			}
+			// spring内置被代理接口Advised
 			else if (!this.advised.opaque && method.getDeclaringClass().isInterface() &&
 					method.getDeclaringClass().isAssignableFrom(Advised.class)) {
 				// Service invocations on ProxyConfig with the proxy config...
+				// 暴露advised对象以实现Advised接口
 				return AopUtils.invokeJoinpointUsingReflection(this.advised, method, args);
 			}
 
@@ -194,20 +206,26 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 				targetClass = target.getClass();
 			}
 
+			// equals，hashCode，以及spring内置被代理接口的方法调用，不回调切面方法
 			// Get the interception chain for this method.
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 
+			// 回调代理方法
 			// Check whether we have any advice. If we don't, we can fallback on direct
 			// reflective invocation of the target, and avoid creating a MethodInvocation.
 			if (chain.isEmpty()) {
 				// We can skip creating a MethodInvocation: just invoke the target directly
 				// Note that the final invoker must be an InvokerInterceptor so we know it does
 				// nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
+				// 直接反射回调
 				Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
 				retVal = AopUtils.invokeJoinpointUsingReflection(target, method, argsToUse);
 			}
 			else {
 				// We need to create a method invocation...
+				// 封装spring的MethodInvocation对象投递给用户的MethodInterceptor.invoke(...)实现，完成链式调用。
+				// 此处实现逻辑同servlet filter调用链逻辑相似，前一个filter需要显式回调doFilter方法才能触发执行下一个Filter
+				// 的逻辑，通常情况下，所有切面逻辑会依次被调用，最终被代理类的method方法才会被执行。
 				invocation = new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
 				// Proceed to the joinpoint through the interceptor chain.
 				retVal = invocation.proceed();
@@ -246,6 +264,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 	 * Equality means interfaces, advisors and TargetSource are equal.
 	 * <p>The compared object may be a JdkDynamicAopProxy instance itself
 	 * or a dynamic proxy wrapping a JdkDynamicAopProxy instance.
+	 * <p> 代理之后类对象的相互比较不同于代理前类对象的比较。
 	 */
 	@Override
 	public boolean equals(Object other) {

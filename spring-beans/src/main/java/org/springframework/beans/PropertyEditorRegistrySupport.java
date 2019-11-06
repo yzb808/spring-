@@ -75,7 +75,8 @@ import org.springframework.core.io.support.ResourceArrayPropertyEditor;
 import org.springframework.util.ClassUtils;
 
 /**
- * Base implementation of the {@link PropertyEditorRegistry} interface.
+ * 基础的属性注册器实现。能注册conversionService，也能注册PropertyEditor，都与类型转换相关。
+ * <p>Base implementation of the {@link PropertyEditorRegistry} interface.
  * Provides management of default editors and custom editors.
  * Mainly serves as base class for {@link BeanWrapperImpl}.
  *

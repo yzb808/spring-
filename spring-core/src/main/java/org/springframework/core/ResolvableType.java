@@ -105,6 +105,8 @@ public class ResolvableType implements Serializable {
 
 	/**
 	 * The {@code VariableResolver} to use or {@code null} if no resolver is available.
+	 * <p>泛型转换器，主要功能是将常规泛型TypeVariable转化成ResolvableType。
+	 * 类的所有泛型信息会在构造ResolvableType对象时被解析，并将泛型结果缓存在variableResolver里。
 	 */
 	private final VariableResolver variableResolver;
 
@@ -118,12 +120,15 @@ public class ResolvableType implements Serializable {
 	 */
 	private final Class<?> resolved;
 
+	// 基于ResolvableType对象hash值不会变化，因此通过一次计算记录在此处，优化HashMap操作时调用hashcode方法的效率。
 	private final Integer hash;
 
 	private ResolvableType superType;
 
+	// 接口信息
 	private ResolvableType[] interfaces;
 
+	// 泛型信息
 	private ResolvableType[] generics;
 
 
@@ -232,6 +237,7 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Determine whether this {@code ResolvableType} is assignable from the
 	 * specified other type.
+	 * <p> a.isAssignableFrom(b)，表示a能不能指向b，a是不是b的父类，会比较泛型，a的泛型是否是b泛型的父类。
 	 * @param other the type to be checked against (as a {@code Class})
 	 * @since 4.2
 	 * @see #isAssignableFrom(ResolvableType)
@@ -362,6 +368,7 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Return the ResolvableType representing the component type of the array or
 	 * {@link #NONE} if this type does not represent an array.
+	 * <p> 获取数组元素的类型。
 	 * @see #isArray()
 	 */
 	public ResolvableType getComponentType() {
@@ -411,6 +418,7 @@ public class ResolvableType implements Serializable {
 	 * @param type the required type (typically narrowed)
 	 * @return a {@link ResolvableType} representing this object as the specified
 	 * type, or {@link #NONE} if not resolvable as that type
+	 * <p> as操作的行为，是递归的寻找当前类和父类的实现接口中有没有入参type的类型，返回接口的ResolvableType
 	 * @see #asCollection()
 	 * @see #asMap()
 	 * @see #getSuperType()
@@ -764,6 +772,7 @@ public class ResolvableType implements Serializable {
 	 * Resolve this type by a single level, returning the resolved value or {@link #NONE}.
 	 * <p>Note: The returned {@link ResolvableType} should only be used as an intermediary
 	 * as it cannot be serialized.
+	 * <p>resolveType被用于解泛型，常规泛型和通配符泛型获取上边界类型，参数泛型获取实际类型
 	 */
 	ResolvableType resolveType() {
 		if (this.type instanceof ParameterizedType) {
@@ -938,6 +947,7 @@ public class ResolvableType implements Serializable {
 	 * assignability checks against the raw class only (analogous to
 	 * {@link Class#isAssignableFrom}, which this serves as a wrapper for.
 	 * For example: {@code ResolvableType.forRawClass(List.class)}.
+	 * <p>排除泛型的影响，获得原始类型，类似class的isAssignableFrom方法。
 	 * @param clazz the class to introspect ({@code null} is semantically
 	 * equivalent to {@code Object.class} for typical use cases here}
 	 * @return a {@link ResolvableType} for the specified class
@@ -967,6 +977,7 @@ public class ResolvableType implements Serializable {
 	 * Return a {@link ResolvableType} for the specified base type
 	 * (interface or base class) with a given implementation class.
 	 * For example: {@code ResolvableType.forClass(List.class, MyArrayList.class)}.
+	 * <p>使用实现类创建ResolvableType，并降级到基类。
 	 * @param baseType the base type (must not be {@code null})
 	 * @param implementationClass the implementation class
 	 * @return a {@link ResolvableType} for the specified base type backed by the

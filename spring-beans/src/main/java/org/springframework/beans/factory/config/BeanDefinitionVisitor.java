@@ -74,13 +74,25 @@ public class BeanDefinitionVisitor {
 	 * @see #resolveStringValue(String)
 	 */
 	public void visitBeanDefinition(BeanDefinition beanDefinition) {
+		// 使用提供的属性渲染parentName
 		visitParentName(beanDefinition);
+		// 渲染类型
 		visitBeanClassName(beanDefinition);
+		/*
+		 * 如果bean不是由spring反射生成，而是用户自己提供，就要用到factory。
+		 * <bean id="factory" class="com.learn.spring.xml.FactoryTestBean" />
+		 * <bean id="createByFactoryBean1" factory-bean="factory" factory-method="getBean" />
+		 */
+		// 渲染FactoryBeanName，工厂bean
 		visitFactoryBeanName(beanDefinition);
+		// 渲染工厂方法
 		visitFactoryMethodName(beanDefinition);
+		// 渲染Scope
 		visitScope(beanDefinition);
+		// 渲染pv，用的最多
 		visitPropertyValues(beanDefinition.getPropertyValues());
 		ConstructorArgumentValues cas = beanDefinition.getConstructorArgumentValues();
+		//渲染构造函数入参，分为默认参数和指定index参数两种
 		visitIndexedArgumentValues(cas.getIndexedArgumentValues());
 		visitGenericArgumentValues(cas.getGenericArgumentValues());
 	}

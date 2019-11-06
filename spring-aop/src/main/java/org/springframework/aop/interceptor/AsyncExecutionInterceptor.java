@@ -56,6 +56,7 @@ import org.springframework.util.ClassUtils;
  * <p>As of Spring 3.1.2 the {@code AnnotationAsyncExecutionInterceptor} subclass is
  * preferred for use due to its support for executor qualification in conjunction with
  * Spring's {@code @Async} annotation.
+ * <p> MethodInterceptor实现类
  *
  * @author Juergen Hoeller
  * @author Chris Beams
@@ -92,6 +93,7 @@ public class AsyncExecutionInterceptor extends AsyncExecutionAspectSupport imple
 	/**
 	 * Intercept the given method invocation, submit the actual calling of the method to
 	 * the correct task executor and return immediately to the caller.
+	 * <p> 移交执行权给线程池
 	 * @param invocation the method to intercept and make asynchronous
 	 * @return {@link Future} if the original method returns {@code Future}; {@code null}
 	 * otherwise.
@@ -157,6 +159,9 @@ public class AsyncExecutionInterceptor extends AsyncExecutionAspectSupport imple
 		return (defaultExecutor != null ? defaultExecutor : new SimpleAsyncTaskExecutor());
 	}
 
+	/*
+	 * 给了最高优先级，从切面调用链的一开始就移交执行权（异步调用）
+	 */
 	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE;

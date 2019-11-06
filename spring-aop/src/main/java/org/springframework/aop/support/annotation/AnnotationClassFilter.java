@@ -39,6 +39,7 @@ public class AnnotationClassFilter implements ClassFilter {
 
 	/**
 	 * Create a new AnnotationClassFilter for the given annotation type.
+	 * <p> 缺省不判断注解继承
 	 * @param annotationType the annotation type to look for
 	 */
 	public AnnotationClassFilter(Class<? extends Annotation> annotationType) {

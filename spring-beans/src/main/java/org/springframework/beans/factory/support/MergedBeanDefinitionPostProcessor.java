@@ -31,6 +31,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * modification. Essentially, this only applies to operations defined on the
  * {@link RootBeanDefinition} itself but not to the properties of its base classes.
  *
+ * <p> MergedBeanDefinitionPostProcessor存放在processorList的末尾，因此最晚被调用。
+ * 例如CommonAnnotationBeanPostProcessor中会回调用户@PostConstruct方法，因此在其它processor被触发后再调用更合适。
  * @author Juergen Hoeller
  * @since 2.5
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#getMergedBeanDefinition

@@ -20,7 +20,7 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * 被Import的class实现ImportAware接口，是的import的class的元信息被注入。
+ * 被Import的class实现ImportAware接口，使得import的class的元信息被注入。
  * 例如:
  * <pre class="code">
  * {@code @Configuration}

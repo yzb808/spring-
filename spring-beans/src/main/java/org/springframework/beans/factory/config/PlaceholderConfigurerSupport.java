@@ -88,6 +88,8 @@ import org.springframework.util.StringValueResolver;
 public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfigurer
 		implements BeanNameAware, BeanFactoryAware {
 
+	
+	 // ${name:default}
 	/** Default placeholder prefix: {@value} */
 	public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
 

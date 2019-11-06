@@ -90,6 +90,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 
 	private int autoGrowCollectionLimit = Integer.MAX_VALUE;
 
+	// 被包裹的对象实体
 	Object wrappedObject;
 
 	private String nestedPath = "";
@@ -210,6 +211,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 		this.nestedPath = (nestedPath != null ? nestedPath : "");
 		this.rootObject = (!"".equals(this.nestedPath) ? rootObject : this.wrappedObject);
 		this.nestedPropertyAccessors = null;
+		// 类型转化器
 		this.typeConverterDelegate = new TypeConverterDelegate(this, this.wrappedObject);
 	}
 

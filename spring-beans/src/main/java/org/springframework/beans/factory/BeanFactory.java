@@ -92,6 +92,7 @@ import org.springframework.core.ResolvableType;
  * <li>DisposableBean's {@code destroy}
  * <li>a custom destroy-method definition
  * </ol>
+ * <p> factory用于生产bean，至于生产bean需要的beanDefinition管理则不是BeanFactory接口的业务范畴。
  *
  * @author Rod Johnson
  * @author Juergen Hoeller

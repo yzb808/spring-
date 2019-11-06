@@ -76,7 +76,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	private Map<String, Object> userAttributes;
 
 	/**
-	 * List of MethodInterceptor and InterceptorAndDynamicMethodMatcher
+	 * List of MethodInterceptor and InterceptorAndDynamicMethodMatcher（静态和动态）
 	 * that need dynamic checks.
 	 */
 	protected final List<?> interceptorsAndDynamicMethodMatchers;
@@ -154,11 +154,14 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
+			// 所有MethodInterceptor都回调完成，反射调用被代理方法
 			return invokeJoinpoint();
 		}
 
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		// 当PointcutAdvisor的MethodMatcher对象mm.isRuntime()为true时，Interceptor会被封装成InterceptorAndDynamicMethodMatcher（详情见DefaultAdvisorChainFactory.getInterceptorsAndDynamicInterceptionAdvice(...)）
+		// 动态增强需要基于每个入参判断是否执行增强逻辑，静态增强则在封装interceptors列表时就梳理出必然会被调用的interceptor
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
@@ -170,12 +173,14 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			else {
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
+				// 不满足条件则跳过本条Interceptor执行
 				return proceed();
 			}
 		}
 		else {
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
+			// 直接回调invoke方法，是否要继续回调下一个MethodInterceptor由当前MethodInterceptor具体实现决定（是否继续调用proceed方法）
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
 		}
 	}

@@ -99,7 +99,7 @@ public class CustomEditorConfigurer implements BeanFactoryPostProcessor, Ordered
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
 
 	/*
-	 * 用户定义的PropertyEditor存放在Registrar里，spring容器初始化阶段会申请到Registrar中拿取之前存入的PropertyEditor
+	 * 用户定义的PropertyEditor存放在Registrar里，spring容器初始化阶段会从Registrar中拿取之前存入的PropertyEditor
 	 */
 	private PropertyEditorRegistrar[] propertyEditorRegistrars;
 
